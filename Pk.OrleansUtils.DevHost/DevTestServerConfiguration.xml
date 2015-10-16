@@ -3,12 +3,17 @@
   <Globals>
     <StorageProviders>
       <Provider Type="Orleans.Storage.MemoryStorage" Name="MemoryStore" />
-      <Provider Type="Pk.OrleansUtils.ElasticSearch.ElasticStorageProvider" Name="Default" DataConnectionString="bingo" />
+      <Provider Type="Pk.OrleansUtils.ElasticSearch.ElasticStorageProvider" Name="Default" DataConnectionString="IndexName=orleans;Host=localhost" />
       <!-- To use Azure storage, uncomment one of the following lines: -->
       <!--<Provider Type="Orleans.Storage.AzureTableStorage" Name="AzureStore" DataConnectionString="UseDevelopmentStorage=true" />-->
       <!--<Provider Type="Orleans.Storage.AzureTableStorage" Name="AzureStore" DataConnectionString="DefaultEndpointsProtocol=https;AccountName=MYACCOUNTNAME;AccountKey=MYACCOUNTKEY" />-->
     </StorageProviders>
     <SeedNode Address="localhost" Port="11111" />
+    <SystemStore DataConnectionString="xxx" SystemStoreType="Custom" 
+                  CustomGatewayProviderAssemblyName="Pk.OrleansUtils.ElasticSearch, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null"
+                 MembershipTableAssembly ="Pk.OrleansUtils.ElasticSearch, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null"
+                 ReminderTableAssembly ="Pk.OrleansUtils.ElasticSearch, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null"
+                 />
   </Globals>
   <Defaults>
     <Networking Address="localhost" Port="11111" />
@@ -16,7 +21,7 @@
     <Tracing DefaultTraceLevel="Info" TraceToConsole="true" TraceToFile="{0}-{1}.log">
       <TraceLevelOverride LogPrefix="Application" TraceLevel="Info" />
     </Tracing>
-    <Statistics MetricsTableWriteInterval="30s" PerfCounterWriteInterval="30s" LogWriteInterval="300s" WriteLogStatisticsToTable="true"/>
+    <Statistics MetricsTableWriteInterval="30s" PerfCounterWriteInterval="30s" LogWriteInterval="300s" WriteLogStatisticsToTable="true" />
   </Defaults>
   <Override Node="Primary">
     <Networking Address="localhost" Port="11111" />

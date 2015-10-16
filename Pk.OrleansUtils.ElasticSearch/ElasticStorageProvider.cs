@@ -25,8 +25,7 @@ namespace Pk.OrleansUtils.ElasticSearch
             get; protected set;
         }
 
-
-        public string IndexName { get; set; } 
+        public ConnectionSettings ConnectionSettings { get; set; }
 
         private string _name = "";
         public string Name
@@ -37,13 +36,14 @@ namespace Pk.OrleansUtils.ElasticSearch
             }
         }
 
+        public ConnectionInfo ConnectionStringInfo { get; private set; }
 
         public async Task ClearStateAsync(string grainType, GrainReference grainReference, GrainState grainState)
         {
             var elasticType = grainType.Replace('.', '_');
             var key = grainReference.ToString();
             var client = new ElasticClient();
-            var res = await client.DeleteAsync(IndexName,elasticType,key);
+            var res = await client.DeleteAsync(ConnectionStringInfo.IndexName,elasticType,key);
         }
 
         public Task Close()
@@ -51,30 +51,64 @@ namespace Pk.OrleansUtils.ElasticSearch
             return TaskDone.Done;
         }
 
+        public static T FromConnectionString<T>(string cs)
+            where T :new()
+        {
+            var parts = cs.Split(';');
+            var connectionInfo = new T();
+            foreach (var part in parts)
+            {
+                var nv = part.Split('=');
+                if (nv.Length == 2)
+                {
+                    var pi = connectionInfo.GetType().GetProperty(nv[0]);
+                    if (pi != null)
+                    {
+                        switch (Type.GetTypeCode(pi.PropertyType))
+                        {
+                            case TypeCode.Boolean:
+                                pi.SetValue(connectionInfo, Boolean.Parse(nv[1]));
+                                break;
+                            case TypeCode.Int32:
+                                pi.SetValue(connectionInfo, Int32.Parse(nv[1]));
+                                break;
+                            default:
+                                pi.SetValue(connectionInfo, nv[1]);
+                                break;
+                        }
+                    }
+                }
+            }
+            return connectionInfo;
+        }
+
+
         public async Task Init(string name, IProviderRuntime providerRuntime, IProviderConfiguration config)
         {
-            IndexName = "orleans";
+            ConnectionStringInfo =  FromConnectionString<ConnectionInfo>(config.Properties["DataConnectionString"]);
+            if (!ConnectionStringInfo.IsValid())
+                throw new Exception("Invalid connection string for provider:"+name);
+            ConnectionSettings = new ConnectionSettings(new UriBuilder("http",ConnectionStringInfo.Host,ConnectionStringInfo.Port,"","").Uri,ConnectionStringInfo.IndexName);
             _name = name;
             Log = providerRuntime.GetLogger(this.GetType().FullName);
             var client = new ElasticClient();
-            var res = await client.IndexExistsAsync(IndexName);
+            var res = await client.IndexExistsAsync(ConnectionStringInfo.IndexName);
             if (!res.Exists)
             {
-                Log.Info("Index {0} does not exist.Creating...",IndexName);
-                var createResponse = await client.CreateIndexAsync(IndexName);
+                Log.Info("Index {0} does not exist.Creating...", ConnectionStringInfo.IndexName);
+                var createResponse = await client.CreateIndexAsync(ConnectionStringInfo.IndexName);
                 if (createResponse.Acknowledged)
                 {
-                    Log.Info("Index {0} has been created.", IndexName);
+                    Log.Info("Index {0} has been created.", ConnectionStringInfo.IndexName);
                 }
             }
         }
 
         public async Task ReadStateAsync(string grainType, GrainReference grainReference, GrainState grainState)
         {
-            var elasticType = grainType.Replace('.', '_');
-            var key = grainReference.ToString();
-            var client = new ElasticClient();
-            var response = await client.Raw.GetAsync(IndexName, elasticType, key);
+            var key = GetElasticSearchKey(grainReference);
+            var client = CreateClient();
+            var response = await client.Raw.GetAsync(ConnectionStringInfo.IndexName, GetElasticSearchType(grainType), key);
             if (response.Success && (bool)response.Response["found"])
             {
                 JsonConvert.PopulateObject(response.Response["_source"], grainState, new JsonSerializerSettings() { });
@@ -84,15 +118,26 @@ namespace Pk.OrleansUtils.ElasticSearch
 
         public async Task WriteStateAsync(string grainType, GrainReference grainReference, GrainState grainState)
         {
-            var elasticType = grainType.Replace('.', '_');
-            var key = grainReference.ToString();
-            var client = new ElasticClient();
-            var response = await client.Raw.IndexAsync(IndexName, elasticType, key, grainState);
+            var key = GetElasticSearchKey(grainReference);
+            var client = CreateClient();
+            var response = await client.Raw.IndexAsync(ConnectionStringInfo.IndexName, GetElasticSearchType(grainType), key, grainState);
             if (!response.Success)
             {
                 throw new Exception("WriteStateAsync operation failed");
             }
 
+        }
+        protected ElasticClient CreateClient()
+        {
+            return new ElasticClient(ConnectionSettings);
+        }
+        protected string GetElasticSearchType(string grainType)
+        {
+            return grainType.Replace('.', '_');
+        }
+        protected string GetElasticSearchKey(GrainReference reference)
+        {
+            return reference.ToString();
         }
     }
 }

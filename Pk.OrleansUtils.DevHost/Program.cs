@@ -25,6 +25,7 @@ using System;
 using System.Threading.Tasks;
 using Orleans;
 using Pk.OrleansUtils.Interfaces;
+using Pk.OrleansUtils.ElasticSearch;
 
 namespace Pk.OrleansUtils.DevHost
 {
@@ -35,6 +36,7 @@ namespace Pk.OrleansUtils.DevHost
     {
         static void Main(string[] args)
         {
+            var fqn = typeof(ConnectionInfo).Assembly.FullName;
             // The Orleans silo environment is initialized in its own app domain in order to more
             // closely emulate the distributed situation, when the client and the server cannot
             // pass data via shared memory.

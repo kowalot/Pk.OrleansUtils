@@ -12,6 +12,7 @@
                  />
     <SeedNode Address="localhost" Port="22222"/>
     <Messaging ResponseTimeout="30s"/>
+    <Liveness ExpectedClusterSize="20" IAmAliveTablePublishTimeout="10s" LivenessEnabled="true" ProbeTimeout="10" TableRefreshTimeout="10" UseLivenessGossip="true"  NumProbedSilos="2" LivenessType="Custom" />
   </Globals>
   <Defaults>
     <Networking Address="localhost" Port="22222"/>

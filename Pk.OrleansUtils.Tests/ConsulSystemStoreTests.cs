@@ -37,10 +37,10 @@ namespace Pk.OrleansUtils.Tests
         {
             for (int i = 0; i < 10; i++)
             {
-               // var grain = GrainFactory.GetGrain<IMyGrain>(Guid.NewGuid());
+                var grain = GrainFactory.GetGrain<IMyGrain>(Guid.NewGuid());
                 Thread.Sleep(10000);
                 StartAdditionalSilos(1);
-               // grain.TaskDoSomething().Wait();
+                grain.TaskDoSomething().Wait();
             }
 
             var silos = this.GetActiveSilos();

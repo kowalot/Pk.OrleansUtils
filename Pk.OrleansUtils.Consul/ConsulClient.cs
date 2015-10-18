@@ -35,6 +35,9 @@ namespace Pk.OrleansUtils.Consul
 
         public async Task<bool> PutKV(KVEntry entry, object extraParams=null )
         {
+            if (entry == null)
+                throw new ArgumentNullException("entry");
+
             using (var client = UsingHttpClient())
             {
                 var uri = new UriBuilder("http", consulInfo.Host, consulInfo.Port, String.Format("/v{0}/{1}/{2}",

@@ -12,8 +12,6 @@ namespace Pk.OrleansUtils.Consul
     {
         public Dictionary<string,ConsulMembershipEntry> Members { get; set; }
 
-        public string ETag { get; set; }
-
         public int Version { get; set; }
 
         public ConsulMembershipTable()
@@ -35,7 +33,7 @@ namespace Pk.OrleansUtils.Consul
         internal MembershipTableData GetMembershipTableData()
         {
             var mb = new MembershipTableData(Members.Select(t => new Tuple<MembershipEntry,string>(t.Value.GetMembershipEntry(),t.Key)).ToList()
-                                            , new TableVersion(Version,ETag));
+                                            , new TableVersion(Version,this._kvEntry.ModifyIndex.ToString()));
             return mb;
         }
 
@@ -45,9 +43,13 @@ namespace Pk.OrleansUtils.Consul
             {
                 Version = newVersion.Version;
             }
-            ETag = Guid.NewGuid().ToString();
-            _kvEntry.SetValue(JsonConvert.SerializeObject(this));
-            return  consul.PutKV(_kvEntry);
+            _kvEntry.SetValue(JsonConvert.SerializeObject(this,Formatting.Indented));
+            return  consul.PutKV(_kvEntry, (newVersion!=null) ? (object)new  { cas=newVersion.VersionEtag } : new object{ });
+        }
+
+        internal bool CanBeUpdate(TableVersion tableVersion)
+        {
+            return (_kvEntry.ModifyIndex.ToString() == tableVersion.VersionEtag);
         }
     }
 }

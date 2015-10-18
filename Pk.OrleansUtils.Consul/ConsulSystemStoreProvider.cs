@@ -22,12 +22,13 @@ namespace Pk.OrleansUtils.Consul
         private const string ORLEANS_CATALOG_KEY = "MembershipTable";
         private const string ORLEANS_MEMBERS_SUBKEY = "Members";
         private const string ORLEANS_I_AM_ALIVE_FOLDER_KEY = "IAmAlive";
+        private TimeSpan maxStaleness;
 
         public bool IsUpdatable
         {
             get
             {
-                throw new NotImplementedException();
+                return true;
             }
         }
 
@@ -35,7 +36,7 @@ namespace Pk.OrleansUtils.Consul
         {
             get
             {
-                throw new NotImplementedException();
+                return maxStaleness;
             }
         }
 
@@ -48,32 +49,44 @@ namespace Pk.OrleansUtils.Consul
 
         public IList<Uri> GetGateways()
         {
-            throw new NotImplementedException();
+            return ReadAll().Result.Members.Select(e => e.Item1).
+                                          Where(m => m.Status == SiloStatus.Active && m.ProxyPort != 0).
+                                          Select(m =>
+                                          {
+                                              m.SiloAddress.Endpoint.Port = m.ProxyPort;
+                                              return m.SiloAddress.ToGatewayUri();
+                                          }).ToList();
         }
 
-        public Task InitializeGatewayListProvider(ClientConfiguration clientConfiguration, TraceLogger traceLogger)
+
+        private async Task InitializeConfig(string dataConnectionString, bool tryInitTableVersion, TraceLogger traceLogger)
         {
-            throw new NotImplementedException();
+            logger = traceLogger;
+            if (logger.IsVerbose3)
+                logger.Verbose3("ConsulSystemStoreProvider.InitializeMembershipTable called.");
+
+            this.Consul = new ConsulClient(ConsulConnectionInfo.FromConnectionString(dataConnectionString));
+            if (tryInitTableVersion)
+            {
+                // create new root catalog
+                await CreateRootCatalog(tryInitTableVersion);
+            }
+        }
+
+        public async Task InitializeGatewayListProvider(ClientConfiguration clientConfiguration, TraceLogger traceLogger)
+        {
+            DeploymentId = clientConfiguration.DeploymentId;
+            maxStaleness = clientConfiguration.GatewayListRefreshPeriod;
+            await InitializeConfig(clientConfiguration.DataConnectionString,false,traceLogger);
         }
 
         public async Task InitializeMembershipTable(GlobalConfiguration globalConfiguration, bool tryInitTableVersion, TraceLogger traceLogger)
         {
-            logger = traceLogger;
-            if (logger.IsVerbose3)
-                    logger.Verbose3("ConsulSystemStoreProvider.InitializeMembershipTable called.");
-
             DeploymentId = globalConfiguration.DeploymentId;
-            this.Consul = new ConsulClient(ConsulConnectionInfo.FromConnectionString(globalConfiguration.DataConnectionString));
-            if (tryInitTableVersion)
-            {
-                // first delete current objects recursively
-                // create new root catalog
-                await CreateRootCatalog(tryInitTableVersion);
-            }
-          
+            await InitializeConfig(globalConfiguration.DataConnectionString, tryInitTableVersion, traceLogger);
         }
 
-   
+
 
         private async Task CreateRootCatalog(bool recreate)
         {

@@ -46,6 +46,7 @@ namespace Pk.OrleansUtils.DevHost
                 AppDomainInitializerArguments = args,
             });
 
+            
             GrainClient.Initialize("DevTestClientConfiguration.xml");
 
             // TODO: once the previous call returns, the silo is up and running.

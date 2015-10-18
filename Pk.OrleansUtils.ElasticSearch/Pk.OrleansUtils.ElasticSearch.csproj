@@ -67,6 +67,7 @@
   <ItemGroup>
     <Compile Include="ConnectionInfo.cs" />
     <Compile Include="ElasticSearchMembershipTableProvider.cs" />
+    <Compile Include="ElasticSearchReminderProvider.cs" />
     <Compile Include="ElasticSearchStatisticsPublisher.cs" />
     <Compile Include="ElasticStorageProvider.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

@@ -10,9 +10,9 @@
     </StorageProviders>
     
     <SeedNode Address="localhost" Port="11111" />
-    <SystemStore SystemStoreType="Custom" DataConnectionString="bingo"
+    <SystemStore SystemStoreType="Custom" DeploymentId="production" DataConnectionString="host=localhost;datacenter=dc1"
              MembershipTableAssembly="Pk.OrleansUtils.Consul"
-             ReminderTableAssembly="Pk.OrleansUtils.Consul"
+             ReminderTableAssembly="Pk.OrleansUtils.ElasticSearch"
                  />
   </Globals>
   <Defaults>

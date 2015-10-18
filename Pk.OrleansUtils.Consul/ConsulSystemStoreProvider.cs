@@ -188,7 +188,7 @@ namespace Pk.OrleansUtils.Consul
                 throw new ConsulSystemStoreException.UpdateRowFailedNoEntry();
             /// 2) A MembershipEntry for a given silo exist in the table but its etag in the table does not match the provided etag.
             /// 3) Update of the TableVersion failed since the given TableVersion etag (as specified by the TableVersion.VersionEtag property) did not match the TableVersion etag in the table.
-            if (!consulTable.CanBeUpdate(tableVersion))// 2&3 because they are updated in Consul together
+            if (!consulTable.CanBeUpdated(tableVersion))// 2&3 because they are updated in Consul together
                 throw new ConsulSystemStoreException.WrongVersionException();
             consulTable.Members.Remove(storedEntry.InstanceName);
             consulTable.Members.Add(entry.InstanceName,new ConsulMembershipEntry(entry));

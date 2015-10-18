@@ -47,7 +47,7 @@ namespace Pk.OrleansUtils.Consul
             return  consul.PutKV(_kvEntry, (newVersion!=null) ? (object)new  { cas=newVersion.VersionEtag } : new object{ });
         }
 
-        internal bool CanBeUpdate(TableVersion tableVersion)
+        internal bool CanBeUpdated(TableVersion tableVersion)
         {
             return (_kvEntry.ModifyIndex.ToString() == tableVersion.VersionEtag);
         }

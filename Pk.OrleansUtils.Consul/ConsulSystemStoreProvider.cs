@@ -63,7 +63,7 @@ namespace Pk.OrleansUtils.Consul
                     logger.Verbose3("ConsulSystemStoreProvider.InitializeMembershipTable called.");
 
             DeploymentId = globalConfiguration.DeploymentId;
-            this.Consul = new ConsulClient(new ConsulConnectionInfo());
+            this.Consul = new ConsulClient(ConsulConnectionInfo.FromConnectionString(globalConfiguration.DataConnectionString));
             if (tryInitTableVersion)
             {
                 // first delete current objects recursively
@@ -98,7 +98,7 @@ namespace Pk.OrleansUtils.Consul
         protected async Task<ConsulMembershipTable> BuildTableWhere(Func<ConsulMembershipEntry,bool> entryPredicate)
         {
             var res = await ReadCatalogKVEntries();
-            var catalogKey = KVEntry.GetKey(ORLEANS_CATALOG_KEY, DeploymentId,ORLEANS_MEMBERS_SUBKEY);
+            var catalogKey = KVEntry.GetFolderKey(ORLEANS_CATALOG_KEY, DeploymentId,ORLEANS_MEMBERS_SUBKEY);
             var catalogKVEntry = res.FirstOrDefault(t => t.Key == catalogKey);
             var consulTable = catalogKVEntry.GetValueAsObject<ConsulMembershipTable>();
             if (entryPredicate != null)

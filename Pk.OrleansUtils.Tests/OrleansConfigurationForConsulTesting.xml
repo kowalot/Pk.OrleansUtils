@@ -6,7 +6,7 @@
       <Provider Type="Orleans.Storage.MemoryStorage" Name="Default" />
       <!--<Provider Type="Orleans.Storage.AzureTableStorage" Name="AzureStore" />-->
     </StorageProviders>
-    <SystemStore SystemStoreType="Custom" DataConnectionString="bingo"
+    <SystemStore SystemStoreType="Custom" DataConnectionString="host=localhost;datacenter=dc1"
                  MembershipTableAssembly="Pk.OrleansUtils.Consul"
                  ReminderTableAssembly="Pk.OrleansUtils.Consul"
                  />

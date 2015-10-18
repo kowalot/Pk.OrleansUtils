@@ -22,7 +22,8 @@ namespace Pk.OrleansUtils.ElasticSearch
 
         public bool IsValid()
         {
-            return (!String.IsNullOrEmpty(IndexName) && !String.IsNullOrEmpty(Host) && Port>0 );
+            return (!String.IsNullOrEmpty(IndexName) && !String.IsNullOrEmpty(Host) && Port > 0);
         }
+
     }
 }

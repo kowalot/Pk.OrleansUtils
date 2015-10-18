@@ -15,36 +15,44 @@ namespace Pk.OrleansUtils.Consul
 
         public int Version { get; set; } = 1;
 
-        public string Datacenter { get; set; } = "dc1";
+        public string Datacenter { get; set; } = "";
 
-        internal Uri GetDeleteKeyUri(object key)
+        public static ConsulConnectionInfo FromConnectionString(string dataConnectionString)
         {
-            return new UriBuilder("http", Host, Port, String.Format("/v{0}/kv/{1}/", Version, key)).Uri;
+            var new1 =  ConsulConnectionInfo.FromConnectionString<ConsulConnectionInfo>(dataConnectionString);
+            return new1;
         }
 
-        internal Uri GetCatalogUri(string key)
+        private static T FromConnectionString<T>(string cs)
+        where T : new()
         {
-            return new UriBuilder("http", Host, Port, String.Format("/v{0}/kv/{1}/", Version, key), "?recurse&dc="+Datacenter).Uri;
-        }
-
-        internal Uri GetKVEntryUri(params string[] path)
-        {
-            return new UriBuilder("http", Host, Port, String.Format("/v{0}/kv/{1}", Version, String.Join(@"/",path))).Uri;
-        }
-
-        internal Uri GetUri(string commandType, object extraValues, params string[] path)
-        {
-            var stringBuilder = new StringBuilder();
-            var props = extraValues.GetType().GetProperties();
-            stringBuilder.Append("?");
-            foreach (var item in props)
+            var parts = cs.Split(';');
+            var connectionInfo = new T();
+            foreach (var part in parts)
             {
-                var value = (item.GetValue(extraValues) != null) ? item.GetValue(extraValues).ToString() : "";
-                stringBuilder.AppendFormat("{0}={1}&", HttpUtility.UrlEncode(item.Name),HttpUtility.UrlEncode(value));
+                var nv = part.Split('=');
+                if (nv.Length == 2)
+                {
+                    var pi = connectionInfo.GetType().GetProperties().FirstOrDefault(t => t.Name.ToLowerInvariant() == nv[0]);
+                    if (pi != null)
+                    {
+                        switch (Type.GetTypeCode(pi.PropertyType))
+                        {
+                            case TypeCode.Boolean:
+                                pi.SetValue(connectionInfo, Boolean.Parse(nv[1]));
+                                break;
+                            case TypeCode.Int32:
+                                pi.SetValue(connectionInfo, Int32.Parse(nv[1]));
+                                break;
+                            default:
+                                pi.SetValue(connectionInfo, nv[1]);
+                                break;
+                        }
+                    }
+                }
             }
-
-            return new UriBuilder("http", Host, Port, String.Format("/v{0}/{1}/{2}/", Version,commandType, String.Join(@"/", path)),stringBuilder.ToString()).Uri;
+            return connectionInfo;
         }
 
+        }
     }
-}

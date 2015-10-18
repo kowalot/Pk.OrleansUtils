@@ -42,6 +42,11 @@ namespace Pk.OrleansUtils.Consul
             var key = String.Join(CatalogSeparatorChar.ToString(), keyPath);
             return key;
         }
+        public static string GetFolderKey(params string[] keyPath)
+        {
+            var key = String.Join(CatalogSeparatorChar.ToString(), keyPath) + CatalogSeparatorChar;
+            return key;
+        }
 
 
         public static KVEntry CreateForKey(params string[] keyPath)
@@ -51,7 +56,7 @@ namespace Pk.OrleansUtils.Consul
             return new1;
         }
 
-        internal void SetValue(string v)
+        public void SetValue(string v)
         {
             _value = v;
         }

@@ -33,14 +33,17 @@ namespace Pk.OrleansUtils.Tests
 
 
         [TestMethod]
-        public  void TestMethod1()
+        public  void ConsulSystemStore_FirstTest()
         {
             for (int i = 0; i < 10; i++)
             {
-                var grain = GrainFactory.GetGrain<IMyGrain>(Guid.NewGuid());
+               // var grain = GrainFactory.GetGrain<IMyGrain>(Guid.NewGuid());
                 Thread.Sleep(10000);
-                grain.TaskDoSomething().Wait();
+                StartAdditionalSilos(1);
+               // grain.TaskDoSomething().Wait();
             }
+
+            var silos = this.GetActiveSilos();
 
             Thread.Sleep(60000);
             logger.Info("Closing...");

@@ -8,11 +8,11 @@
       <!--<Provider Type="Orleans.Storage.AzureTableStorage" Name="AzureStore" DataConnectionString="UseDevelopmentStorage=true" />-->
       <!--<Provider Type="Orleans.Storage.AzureTableStorage" Name="AzureStore" DataConnectionString="DefaultEndpointsProtocol=https;AccountName=MYACCOUNTNAME;AccountKey=MYACCOUNTKEY" />-->
     </StorageProviders>
+    
     <SeedNode Address="localhost" Port="11111" />
-    <SystemStore DataConnectionString="xxx" SystemStoreType="Custom" 
-                  CustomGatewayProviderAssemblyName="Pk.OrleansUtils.ElasticSearch, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null"
-                 MembershipTableAssembly ="Pk.OrleansUtils.ElasticSearch, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null"
-                 ReminderTableAssembly ="Pk.OrleansUtils.ElasticSearch, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null"
+    <SystemStore SystemStoreType="Custom" DataConnectionString="bingo"
+             MembershipTableAssembly="Pk.OrleansUtils.Consul"
+             ReminderTableAssembly="Pk.OrleansUtils.Consul"
                  />
   </Globals>
   <Defaults>

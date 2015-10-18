@@ -13,6 +13,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Pk.OrleansUtils.ElasticSear
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Pk.OrleansUtils.Tests", "Pk.OrleansUtils.Tests\Pk.OrleansUtils.Tests.csproj", "{F2D9DE38-8072-4381-963B-E75CA19239B0}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Pk.OrleansUtils.Consul", "Pk.OrleansUtils.Consul\Pk.OrleansUtils.Consul.csproj", "{664B2F23-B7F0-48E0-AF73-6DCB465A9B72}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -39,6 +41,10 @@ Global
 		{F2D9DE38-8072-4381-963B-E75CA19239B0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F2D9DE38-8072-4381-963B-E75CA19239B0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F2D9DE38-8072-4381-963B-E75CA19239B0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{664B2F23-B7F0-48E0-AF73-6DCB465A9B72}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{664B2F23-B7F0-48E0-AF73-6DCB465A9B72}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{664B2F23-B7F0-48E0-AF73-6DCB465A9B72}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{664B2F23-B7F0-48E0-AF73-6DCB465A9B72}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

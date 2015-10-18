@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 
 namespace Pk.OrleansUtils
 {
+    [Serializable]
     public class InternalClass
     {
         public DateTime WasHere { get; set; }

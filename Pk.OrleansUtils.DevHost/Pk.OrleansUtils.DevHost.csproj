@@ -111,6 +111,10 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Pk.OrleansUtils.Consul\Pk.OrleansUtils.Consul.csproj">
+      <Project>{664b2f23-b7f0-48e0-af73-6dcb465a9b72}</Project>
+      <Name>Pk.OrleansUtils.Consul</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Pk.OrleansUtils.ElasticSearch\Pk.OrleansUtils.ElasticSearch.csproj">
       <Project>{4039b7d6-543e-493e-91e9-b6c0bc3e9d9e}</Project>
       <Name>Pk.OrleansUtils.ElasticSearch</Name>

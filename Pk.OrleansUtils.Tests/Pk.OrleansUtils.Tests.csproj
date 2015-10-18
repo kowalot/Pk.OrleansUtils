@@ -67,6 +67,7 @@
   </Choose>
   <ItemGroup>
     <Compile Include="BasicTests.cs" />
+    <Compile Include="ConsulSystemStoreTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -76,9 +77,30 @@
     <Content Include="ClientConfigurationForTesting.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="OrleansConfigurationForConsulTesting.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="OrleansConfigurationForTesting.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Pk.OrleansUtils.Consul\Pk.OrleansUtils.Consul.csproj">
+      <Project>{664b2f23-b7f0-48e0-af73-6dcb465a9b72}</Project>
+      <Name>Pk.OrleansUtils.Consul</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Pk.OrleansUtils.ElasticSearch\Pk.OrleansUtils.ElasticSearch.csproj">
+      <Project>{4039b7d6-543e-493e-91e9-b6c0bc3e9d9e}</Project>
+      <Name>Pk.OrleansUtils.ElasticSearch</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Pk.OrleansUtils.Interfaces\Pk.OrleansUtils.Interfaces.csproj">
+      <Project>{0ad71245-72f6-43a5-a124-9f86c17f99a2}</Project>
+      <Name>Pk.OrleansUtils.Interfaces</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Pk.OrleansUtils\Pk.OrleansUtils.csproj">
+      <Project>{2116fd28-b19a-4934-af8f-40d8368637ac}</Project>
+      <Name>Pk.OrleansUtils</Name>
+    </ProjectReference>
   </ItemGroup>
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">

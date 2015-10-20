@@ -8,19 +8,19 @@ using System.Threading.Tasks;
 
 namespace Pk.OrleansUtils.Consul
 {
-    public class ConsulMembershipTable
+    public class ConsulMembershipTableEntry
     {
         public Dictionary<string,ConsulMembershipEntry> Members { get; set; }
 
         public int Version { get; set; }
 
-        public ConsulMembershipTable()
+        public ConsulMembershipTableEntry()
         {
             Members = new Dictionary<string, ConsulMembershipEntry>();
         }
 
         private KVEntry _kvEntry = null;
-        public ConsulMembershipTable(KVEntry kvEntry)
+        public ConsulMembershipTableEntry(KVEntry kvEntry)
         {
             _kvEntry = kvEntry;
             Members = new Dictionary<string, ConsulMembershipEntry>();

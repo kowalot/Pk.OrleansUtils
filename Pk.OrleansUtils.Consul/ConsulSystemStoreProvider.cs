@@ -68,6 +68,18 @@ namespace Pk.OrleansUtils.Consul
             this.Consul = new ConsulClient(ConsulConnectionInfo.FromConnectionString(dataConnectionString));
             if (tryInitTableVersion)
             {
+                // if you are first and there are entries delete table
+                // which mean that whole cluster is recreated for the same deploymentId
+                var gateways = await ReadAll();
+                if (gateways.Members.Count > 0)
+                {
+                    if (logger.IsVerbose3)
+                        logger.Verbose3("First member initialization... delete old table.");
+                    var deleteRet = await Consul.DeleteKV(KVEntry.GetFolderKey(ORLEANS_CATALOG_KEY), new { recurse=1 });
+                    if (logger.IsVerbose3)
+                        logger.Verbose3("Membership table has been deleted.");
+                }
+
                 // create new root catalog
                 await CreateRootCatalog(tryInitTableVersion);
             }
@@ -91,7 +103,7 @@ namespace Pk.OrleansUtils.Consul
         private async Task CreateRootCatalog(bool recreate)
         {
             var newCatalogEntry = KVEntry.CreateForKey(ORLEANS_CATALOG_KEY , DeploymentId, ORLEANS_MEMBERS_SUBKEY);
-            var consulTable = new ConsulMembershipTable(newCatalogEntry);
+            var consulTable = new ConsulMembershipTableEntry(newCatalogEntry);
             await consulTable.Save(Consul, new TableVersion(0,0.ToString()));
         }
 
@@ -108,12 +120,12 @@ namespace Pk.OrleansUtils.Consul
             return res.GetMembershipTableData();
         }
 
-        protected async Task<ConsulMembershipTable> BuildTableWhere(Func<ConsulMembershipEntry,bool> entryPredicate)
+        protected async Task<ConsulMembershipTableEntry> BuildTableWhere(Func<ConsulMembershipEntry,bool> entryPredicate)
         {
             var res = await ReadCatalogKVEntries();
             var catalogKey = KVEntry.GetKey(ORLEANS_CATALOG_KEY, DeploymentId,ORLEANS_MEMBERS_SUBKEY);
             var catalogKVEntry = res.FirstOrDefault(t => t.Key == catalogKey);
-            var consulTable = catalogKVEntry.GetValueAsObject<ConsulMembershipTable>();
+            var consulTable = catalogKVEntry.GetValueAsObject<ConsulMembershipTableEntry>();
             if (entryPredicate != null)
             {
                 consulTable.Members = consulTable.Members.Values.Where(entryPredicate).ToDictionary(t => t.InstanceName);

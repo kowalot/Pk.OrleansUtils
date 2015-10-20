@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <OrleansConfiguration xmlns="urn:orleans">
-  <Globals>
+  <Globals >
     <StorageProviders>
       <Provider Type="Orleans.Storage.MemoryStorage" Name="MemoryStore" />
       <Provider Type="Pk.OrleansUtils.ElasticSearch.ElasticStorageProvider" Name="Default" DataConnectionString="IndexName=orleans;Host=localhost" />
@@ -10,9 +10,10 @@
     </StorageProviders>
     
     <SeedNode Address="localhost" Port="11111" />
-    <SystemStore SystemStoreType="Custom" DeploymentId="production" DataConnectionString="host=localhost;datacenter=dc1"
+    <SystemStore SystemStoreType="Custom"  DataConnectionString="host=localhost;datacenter=dc1"
              MembershipTableAssembly="Pk.OrleansUtils.Consul"
-             ReminderTableAssembly="Pk.OrleansUtils.ElasticSearch"
+             ReminderTableAssembly="Pk.OrleansUtils.Consul"
+             DataConnectionStringForReminders="Bingo"
                  />
   </Globals>
   <Defaults>
@@ -23,7 +24,7 @@
     </Tracing>
     <Statistics MetricsTableWriteInterval="30s" PerfCounterWriteInterval="30s" LogWriteInterval="300s" WriteLogStatisticsToTable="true" />
   </Defaults>
-  <Override Node="Primary">
+  <Override Node="Primary" >
     <Networking Address="localhost" Port="11111" />
     <ProxyingGateway Address="localhost" Port="30000" />
   </Override>

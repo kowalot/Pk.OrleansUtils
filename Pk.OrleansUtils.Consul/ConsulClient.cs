@@ -86,18 +86,23 @@ namespace Pk.OrleansUtils.Consul
 
         public async Task<IEnumerable<KVEntry>> ReadKVEntries(object extraValues, params string[] keyPath)
         {
-
+            
             using (var client = UsingHttpClient())
             {
-                var uri = GetUri(KV_ENTRIES , extraValues, keyPath);
-                var res = await client.GetAsync(uri);
-                if (res.StatusCode == HttpStatusCode.OK)
+                try {
+                    var uri = GetUri(KV_ENTRIES, extraValues, keyPath);
+                    var res = await client.GetAsync(uri);
+                    if (res.StatusCode == HttpStatusCode.OK)
+                    {
+                        var content = await res.Content.ReadAsStringAsync();
+                        var entries = JsonConvert.DeserializeObject<IEnumerable<KVEntry>>(content);
+                        return entries;
+                    }
+                    return new List<KVEntry>();
+                }catch(Exception ex)
                 {
-                    var content = await res.Content.ReadAsStringAsync();
-                    var entries = JsonConvert.DeserializeObject<IEnumerable<KVEntry>>(content);
-                    return entries;
+                    throw;
                 }
-                return new List<KVEntry>();
             }
         }
     }

@@ -36,7 +36,6 @@ namespace Pk.OrleansUtils.DevHost
     {
         static void Main(string[] args)
         {
-            var fqn = typeof(ConnectionInfo).Assembly.FullName;
             // The Orleans silo environment is initialized in its own app domain in order to more
             // closely emulate the distributed situation, when the client and the server cannot
             // pass data via shared memory.
@@ -55,6 +54,9 @@ namespace Pk.OrleansUtils.DevHost
             var mygrain = GrainClient.GrainFactory.GetGrain<IMyGrain>(Guid.Empty);
 
             mygrain.TaskDoSomething().Wait();
+
+            var reminderTest = GrainClient.GrainFactory.GetGrain<IReminderTest>("bingo");
+            reminderTest.RegisterReminder(60);
 
             Console.WriteLine("Orleans Silo is running.\nPress Enter to terminate...");
             Console.ReadLine();

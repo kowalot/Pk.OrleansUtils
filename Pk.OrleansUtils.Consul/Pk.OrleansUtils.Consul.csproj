@@ -56,7 +56,6 @@
     <Compile Include="ConsulClient.cs" />
     <Compile Include="ConsulConnectionInfo.cs" />
     <Compile Include="ConsulMembershipTableEntry.cs" />
-    <Compile Include="ConsulReminderTable.cs" />
     <Compile Include="ConsulSystemStoreException.cs" />
     <Compile Include="ConsulSystemStoreProvider.cs" />
     <Compile Include="KVEntry.cs" />

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Nest;
 
 namespace Pk.OrleansUtils.ElasticSearch
 {
@@ -25,5 +26,14 @@ namespace Pk.OrleansUtils.ElasticSearch
             return (!String.IsNullOrEmpty(IndexName) && !String.IsNullOrEmpty(Host) && Port > 0);
         }
 
+        internal ConnectionSettings GetConnectionSettings()
+        {
+            var cs = new ConnectionSettings(new UriBuilder("http", Host, Port, "/").Uri, IndexName);
+#if DEBUG
+            cs.EnableTrace(true);
+#endif
+            return cs;
+
+        }
     }
 }

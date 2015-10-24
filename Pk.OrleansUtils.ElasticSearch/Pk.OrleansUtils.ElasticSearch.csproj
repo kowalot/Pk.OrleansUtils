@@ -69,7 +69,6 @@
     <Compile Include="ElasticReminderEntry.cs" />
     <Compile Include="ElasticReminderTableProvider.cs" />
     <Compile Include="ElasticSearchMembershipTableProvider.cs" />
-    <Compile Include="ElasticSearchReminderProvider.cs" />
     <Compile Include="ElasticSearchStatisticsPublisher.cs" />
     <Compile Include="ElasticsearchStorageException.cs" />
     <Compile Include="ElasticStorageProvider.cs" />

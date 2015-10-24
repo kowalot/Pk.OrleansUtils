@@ -1,0 +1,24 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<OrleansConfiguration xmlns="urn:orleans">
+  <Globals >
+    <StorageProviders>
+      <Provider Type="Orleans.Storage.MemoryStorage" Name="MemoryStore" />
+      <Provider Type="Orleans.Storage.MemoryStorage" Name="Default" />
+    </StorageProviders>
+
+    <SeedNode Address="localhost" Port="22222" />
+    <SystemStore SystemStoreType="Custom"  DataConnectionString="host=localhost;datacenter=dc1"
+             MembershipTableAssembly="Pk.OrleansUtils.Consul"
+             ReminderTableAssembly="Pk.OrleansUtils.ElasticSearch"
+             DataConnectionStringForReminders="host=localhost;datacenter=dc1"
+                 />
+  </Globals>
+  <Defaults>
+    <Networking Address="localhost" Port="22222" />
+    <ProxyingGateway Address="localhost" Port="40000" />
+    <Tracing DefaultTraceLevel="Info" TraceToConsole="true" TraceToFile="{0}-{1}.log">
+      <TraceLevelOverride LogPrefix="Application" TraceLevel="Info" />
+    </Tracing>
+    <Statistics MetricsTableWriteInterval="30s" PerfCounterWriteInterval="30s" LogWriteInterval="300s" WriteLogStatisticsToTable="true" />
+  </Defaults>
+</OrleansConfiguration>

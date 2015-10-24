@@ -43,7 +43,7 @@ namespace Pk.OrleansUtils.ElasticSearch
             var elasticType = grainType.Replace('.', '_');
             var key = grainReference.ToString();
             var client = new ElasticClient();
-            var res = await client.DeleteAsync(ConnectionStringInfo.IndexName,elasticType,key);
+            var res = await client.DeleteAsync(ConnectionStringInfo.Index,elasticType,key);
         }
 
         public Task Close()
@@ -88,18 +88,18 @@ namespace Pk.OrleansUtils.ElasticSearch
             ConnectionStringInfo =  FromConnectionString<ConnectionInfo>(config.Properties["DataConnectionString"]);
             if (!ConnectionStringInfo.IsValid())
                 throw new Exception("Invalid connection string for provider:"+name);
-            ConnectionSettings = new ConnectionSettings(new UriBuilder("http",ConnectionStringInfo.Host,ConnectionStringInfo.Port,"","").Uri,ConnectionStringInfo.IndexName);
+            ConnectionSettings = new ConnectionSettings(new UriBuilder("http",ConnectionStringInfo.Host,ConnectionStringInfo.Port,"","").Uri,ConnectionStringInfo.Index);
             _name = name;
             Log = providerRuntime.GetLogger(this.GetType().FullName);
             var client = new ElasticClient();
-            var res = await client.IndexExistsAsync(ConnectionStringInfo.IndexName);
+            var res = await client.IndexExistsAsync(ConnectionStringInfo.Index);
             if (!res.Exists)
             {
-                Log.Info("Index {0} does not exist.Creating...", ConnectionStringInfo.IndexName);
-                var createResponse = await client.CreateIndexAsync(ConnectionStringInfo.IndexName);
+                Log.Info("Index {0} does not exist.Creating...", ConnectionStringInfo.Index);
+                var createResponse = await client.CreateIndexAsync(ConnectionStringInfo.Index);
                 if (createResponse.Acknowledged)
                 {
-                    Log.Info("Index {0} has been created.", ConnectionStringInfo.IndexName);
+                    Log.Info("Index {0} has been created.", ConnectionStringInfo.Index);
                 }
             }
         }
@@ -108,7 +108,7 @@ namespace Pk.OrleansUtils.ElasticSearch
         {
             var key = GetElasticSearchKey(grainReference);
             var client = CreateClient();
-            var response = await client.Raw.GetAsync(ConnectionStringInfo.IndexName, GetElasticSearchType(grainType), key);
+            var response = await client.Raw.GetAsync(ConnectionStringInfo.Index, GetElasticSearchType(grainType), key);
             if (response.Success && (bool)response.Response["found"])
             {
                 JsonConvert.PopulateObject(response.Response["_source"], grainState, new JsonSerializerSettings() { });
@@ -120,7 +120,7 @@ namespace Pk.OrleansUtils.ElasticSearch
         {
             var key = GetElasticSearchKey(grainReference);
             var client = CreateClient();
-            var response = await client.Raw.IndexAsync(ConnectionStringInfo.IndexName, GetElasticSearchType(grainType), key, grainState);
+            var response = await client.Raw.IndexAsync(ConnectionStringInfo.Index, GetElasticSearchType(grainType), key, grainState);
             if (!response.Success)
             {
                 throw new Exception("WriteStateAsync operation failed");

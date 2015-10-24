@@ -9,7 +9,7 @@ namespace Pk.OrleansUtils.ElasticSearch
 {
     public class ConnectionInfo
     {
-        public string IndexName { get; set; }
+        public string Index { get; set; }
 
         public string Host { get; set; }
 
@@ -23,17 +23,19 @@ namespace Pk.OrleansUtils.ElasticSearch
 
         public bool IsValid()
         {
-            return (!String.IsNullOrEmpty(IndexName) && !String.IsNullOrEmpty(Host) && Port > 0);
+            return (!String.IsNullOrEmpty(Index) && !String.IsNullOrEmpty(Host) && Port > 0);
         }
 
         internal ConnectionSettings GetConnectionSettings()
         {
-            var cs = new ConnectionSettings(new UriBuilder("http", Host, Port, "/").Uri, IndexName);
+            var cs = new ConnectionSettings(new UriBuilder("http", Host, Port, "/").Uri, Index);
 #if DEBUG
             cs.EnableTrace(true);
 #endif
             return cs;
 
         }
+
+
     }
 }

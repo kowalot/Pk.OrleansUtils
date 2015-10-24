@@ -26,7 +26,7 @@ namespace Pk.OrleansUtils.ElasticSearch
             ReminderName = entry.ReminderName;
             GrainRefKey = entry.GrainRef.ToKeyString();
             Period = entry.Period;
-            ETag = entry.ETag;
+            ETag = entry.ETag ?? "0";
             StartAt = entry.StartAt;
             Id = CreateIdFrom(entry.GrainRef, entry.ReminderName);
         }

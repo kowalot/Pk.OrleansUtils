@@ -125,22 +125,27 @@ namespace Pk.OrleansUtils.Consul
             var res = await ReadCatalogKVEntries();
             var catalogKey = KVEntry.GetKey(ORLEANS_CATALOG_KEY, DeploymentId,ORLEANS_MEMBERS_SUBKEY);
             var catalogKVEntry = res.FirstOrDefault(t => t.Key == catalogKey);
-            var consulTable = catalogKVEntry.GetValueAsObject<ConsulMembershipTableEntry>();
-            if (entryPredicate != null)
+            if (catalogKVEntry != null)
             {
-                consulTable.Members = consulTable.Members.Values.Where(entryPredicate).ToDictionary(t => t.InstanceName);
-            }
-            // Apply separate "dirty writes" IamAlive kvs
-            var subKeyName = "";
-            foreach (var kv in res)
-                if (kv.IsSubKeyOf(out subKeyName,ORLEANS_CATALOG_KEY, DeploymentId,ORLEANS_I_AM_ALIVE_FOLDER_KEY))
+                var consulTable = catalogKVEntry.GetValueAsObject<ConsulMembershipTableEntry>();
+                if (entryPredicate != null)
                 {
-                    var silo = consulTable.Members.Values.FirstOrDefault(t => t.SiloAddress == subKeyName);
-                    if (silo!=null)
-                        silo.IAmAliveTime = DateTime.Parse(kv.Value);
+                    consulTable.Members = consulTable.Members.Values.Where(entryPredicate).ToDictionary(t => t.InstanceName);
                 }
-            consulTable.SetOriginKVEntry(catalogKVEntry);
-            return consulTable;
+                // Apply separate "dirty writes" IamAlive kvs
+                var subKeyName = "";
+                foreach (var kv in res)
+                    if (kv.IsSubKeyOf(out subKeyName, ORLEANS_CATALOG_KEY, DeploymentId, ORLEANS_I_AM_ALIVE_FOLDER_KEY))
+                    {
+                        var silo = consulTable.Members.Values.FirstOrDefault(t => t.SiloAddress == subKeyName);
+                        if (silo != null)
+                            silo.IAmAliveTime = DateTime.Parse(kv.Value);
+                    }
+                consulTable.SetOriginKVEntry(catalogKVEntry);
+                return consulTable;
+            }
+            else
+                return new ConsulMembershipTableEntry();
         }
 
 

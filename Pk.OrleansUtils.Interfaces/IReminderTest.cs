@@ -10,5 +10,7 @@ namespace Pk.OrleansUtils.Interfaces
     public interface IReminderTest : IGrainWithStringKey
     {
         Task RegisterReminder(int secondsAhead);
+        Task<int> GetCount();
+        Task<int> GetRemindersCount();
     }
 }

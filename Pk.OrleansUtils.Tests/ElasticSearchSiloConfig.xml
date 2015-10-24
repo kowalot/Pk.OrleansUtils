@@ -7,10 +7,10 @@
     </StorageProviders>
 
     <SeedNode Address="localhost" Port="22222" />
-    <SystemStore SystemStoreType="Custom"  DataConnectionString="host=localhost;datacenter=dc1"
+    <SystemStore SystemStoreType="Custom"  DataConnectionString="host=localhost;datacenter=dc1;index=orleans_reminders"
              MembershipTableAssembly="Pk.OrleansUtils.Consul"
              ReminderTableAssembly="Pk.OrleansUtils.ElasticSearch"
-             DataConnectionStringForReminders="host=localhost;datacenter=dc1"
+             DataConnectionStringForReminders="host=localhost;datacenter=dc1;index=orleans_reminders"
                  />
   </Globals>
   <Defaults>

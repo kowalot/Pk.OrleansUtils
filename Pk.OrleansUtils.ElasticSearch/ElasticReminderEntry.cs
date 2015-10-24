@@ -19,6 +19,14 @@ namespace Pk.OrleansUtils.ElasticSearch
 
         }
 
+        public string ToElasticValue(GrainReference gref)
+        {
+            ///"GrainReference=00000000000000000000000000000000060000006aa96326+abc"
+            /// to
+            /// "GrainReference^00000000000000000000000000000000060000006aa96326_abc"
+            return gref.ToKeyString().Replace("=", "__").Replace("_", "+");
+        }
+
         public ElasticReminderEntry(ReminderEntry entry)
         {
             this.entry = entry;
@@ -56,8 +64,12 @@ namespace Pk.OrleansUtils.ElasticSearch
         internal async Task<string> Upsert(ElasticClient elastic)
         {
             var op = await elastic.UpdateAsync<ElasticReminderEntry>(
-                    u => u.Id(this, true)
-                        .Doc(this));
+                    u => u
+                         .Doc(this)
+                         .DocAsUpsert(true)
+                        );
+            if (!op.IsValid )
+                throw new ElasticsearchStorageException("Error occured during update for ElasticReminderEntry",op.ConnectionStatus.OriginalException);
             return op.Version;
         }
 

@@ -26,43 +26,11 @@ namespace Pk.OrleansUtils.Tests
     [DeploymentItem("Pk.OrleansUtils.Consul.dll")]
     [DeploymentItem("Pk.OrleansUtils.ElasticSearch.dll")]
     [TestClass]
-    public class ElasticsearchReminderStorageTests : TestingSiloHost
+    public class Elastic_ReminderTableTests 
     {
 
 
-        private TestContext testContextInstance;
-
-        /// <summary>
-        ///Gets or sets the test context which provides
-        ///information about and functionality for the current test run.
-        ///</summary>
-        public TestContext TestContext
-        {
-            get
-            {
-                return testContextInstance;
-            }
-            set
-            {
-                testContextInstance = value;
-            }
-        }
-
-        #region Additional test attributes
-        //
-        // You can use the following additional attributes as you write your tests:
-        //
-        // Use ClassInitialize to run code before running the first test in the class
-        [ClassInitialize()]
-        public static void MyClassInitialize(TestContext testContext) {
-            //StopAllSilos();
-        }
-
-        // Use ClassCleanup to run code after all tests in a class have run
-        // [ClassCleanup()]
-        // public static void MyClassCleanup() { }
-        //
-        //Use TestInitialize to run code before running each test
+        public TestingSiloHost Host { get; set; }
 
         public IReminderTable TestReminderTable { get; set; }
 
@@ -76,7 +44,8 @@ namespace Pk.OrleansUtils.Tests
             SiloConfigFile = new FileInfo("ElasticSearchSiloConfig.xml"),
             LivenessType = GlobalConfiguration.LivenessProviderType.Custom,
             ReminderServiceType = GlobalConfiguration.ReminderServiceProviderType.Custom,
-            DataConnectionString = $"index={remindersIndex};Host=localhost"
+            DataConnectionString = $"index={remindersIndex};Host=localhost",
+            StartClient=true
         };
 
         private static readonly TestingClientOptions clientOptions = new TestingClientOptions
@@ -87,37 +56,47 @@ namespace Pk.OrleansUtils.Tests
                         new IPEndPoint(IPAddress.Loopback, TestingSiloHost.ProxyBasePort),
                     }),
             PreferedGatewayIndex = 0
+            
         };
+ 
 
-        public ElasticsearchReminderStorageTests()
-            : base(siloOptions,clientOptions)
-        { }
-
-        [TestInitialize()]
-         public void MyTestInitialize() {
-            var elastic = new ElasticClient(new ConnectionSettings(new UriBuilder("http","localhost",9200,"","").Uri,remindersIndex));
+        private static void deleteTestIndices()
+        {
+            var elastic = new ElasticClient(new ConnectionSettings(new UriBuilder("http", "localhost", 9200, "", "").Uri, remindersIndex));
 
             var indexExists = elastic.IndexExists(remindersIndex);
             if (indexExists.Exists)
             {
-                var deleteResponse =  elastic.DeleteIndex(remindersIndex, d=>d.Index(remindersIndex));
+                var deleteResponse = elastic.DeleteIndex(remindersIndex, d => d.Index(remindersIndex));
                 if (!deleteResponse.IsValid)
                     throw new Exception("Initialization failed");
             }
         }
 
-        //Use TestCleanup to run code after each test has run
-        [TestCleanup()]
-         public void MyTestCleanup() {
+
+        public class MyTestSilo:TestingSiloHost
+        {
+            public MyTestSilo():base(siloOptions,clientOptions)
+            {
+
+            }
         }
 
-        #endregion
+     
+        public void Initialize()
+        {
+            deleteTestIndices();
+            Host = new MyTestSilo();
+        }
 
-  
         [TestMethod]
         public void ElasticsearchReminderTable_BasicTest()
         {
-            var reminderTest = GrainClient.GrainFactory.GetGrain<IReminderTest>("xxx");
+            Initialize();
+
+            var longReminderGrain = GrainClient.GrainFactory.GetGrain<IReminderTest>("looong");
+            longReminderGrain.RegisterReminder(6000).Wait();
+            var reminderTest = GrainClient.GrainFactory.GetGrain<IReminderTest>("abc");
             reminderTest.RegisterReminder(60).Wait();
             Thread.Sleep(130 * 1000);
             var countTask = reminderTest.GetCount();
@@ -126,6 +105,9 @@ namespace Pk.OrleansUtils.Tests
             var remindersCountTask = reminderTest.GetRemindersCount();
             remindersCountTask.Wait();
             Assert.IsTrue(remindersCountTask.Result == 0);
+            var longTask = longReminderGrain.GetRemindersCount();
+            longTask.Wait();
+            Assert.IsTrue(longTask.Result == 1);
         }
     }
 }

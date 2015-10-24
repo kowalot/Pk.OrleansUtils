@@ -9,7 +9,7 @@ using Orleans.Runtime;
 
 namespace Pk.OrleansUtils
 {
-    public class ReminderTest : Grain<ReminderState>,IReminderTest, IRemindable
+    public class ReminderGrain : Grain<ReminderState>,IReminderTest, IRemindable
     {
         public Task<int> GetCount()
         {
@@ -18,7 +18,8 @@ namespace Pk.OrleansUtils
 
         public async Task<int> GetRemindersCount()
         {
-            return (await GetReminders()).Count;
+            var reminders = await GetReminders();
+            return reminders.Count;
         }
 
         public async Task ReceiveReminder(string reminderName, TickStatus status)

@@ -11,6 +11,12 @@ using System.Threading.Tasks;
 
 namespace Pk.OrleansUtils.Tests
 {
+    [DeploymentItem("OrleansProviders.dll")]
+    [DeploymentItem("Pk.OrleansUtils.dll")]
+    [DeploymentItem("Pk.OrleansUtils.Consul.dll")]
+    [DeploymentItem("Pk.OrleansUtils.ElasticSearch.dll")]
+    [DeploymentItem("OrleansConfigurationForConsulTesting.xml")]
+    [DeploymentItem("ClientConfigurationForTesting.xml")]
     [TestClass]
     public class ConsulSystemStoreTests : TestingSiloHost
     {

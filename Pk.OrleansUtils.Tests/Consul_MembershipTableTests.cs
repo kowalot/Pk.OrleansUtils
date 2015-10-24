@@ -14,38 +14,15 @@ namespace Pk.OrleansUtils.Tests
     /// </summary>
     [TestClass]
     [DeploymentItem("Pk.OrleansUtils.Consul.dll")]
-    public class ConsulMembershipTableTests
+    public class Consul_MembershipTableTests : TestingSiloHost
     {
         public TestContext TestContext { get; set; }
-
-        private string deploymentId;
-        private SiloAddress siloAddress;
-        private IMembershipTable membership;
-        private static readonly TimeSpan timeout = TimeSpan.FromMinutes(1);
-
 
         // Use ClassInitialize to run code before running the first test in the class
         [ClassInitialize]
         public static void ClassInitialize(TestContext testContext)
         {
             TraceLogger.Initialize(new NodeConfiguration());
-        }
-
-        private async Task Initialize()
-        {
-            //deploymentId = "test-" + Guid.NewGuid();
-            //int generation = SiloAddress.AllocateNewGeneration();
-            //siloAddress = SiloAddress.NewLocalAddress(generation);
-
-            //GlobalConfiguration config = new GlobalConfiguration
-            //{
-            //    DeploymentId = deploymentId,
-            //    DataConnectionString = StorageTestConstants.GetZooKeeperConnectionString()
-            //};
-
-            //var mbr = AssemblyLoader.LoadAndCreateInstance<IMembershipTable>(Constants.ORLEANS_ZOOKEEPER_UTILS_DLL, logger);
-            //await mbr.InitializeMembershipTable(config, true, logger).WithTimeout(timeout);
-            //membership = mbr;
         }
 
         // Use TestCleanup to run code after each test has run

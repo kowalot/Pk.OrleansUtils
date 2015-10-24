@@ -10,7 +10,7 @@ using Orleans.Runtime.Configuration;
 
 namespace Pk.OrleansUtils.ElasticSearch
 {
-    public class ElasticSearchMembershipTableProvider : IMembershipTable, IGatewayListProvider
+    public class ElasticMembershipTableProvider : IMembershipTable, IGatewayListProvider
     {
         public bool IsUpdatable
         {

@@ -1,5 +1,5 @@
 # Pk.OrleansUtils - Orleans utils
 
-Consul based membership table for Orleans (no external libs dependencies)
+Consul based membership table for Orleans 
 
-ElasticSearch based storage provider (Nest)
+ElasticSearch based grains and remainders storage provider 

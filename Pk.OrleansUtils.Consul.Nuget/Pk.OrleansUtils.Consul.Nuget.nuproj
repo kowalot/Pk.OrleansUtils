@@ -1,0 +1,46 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|AnyCPU">
+      <Configuration>Debug</Configuration>
+      <Platform>AnyCPU</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|AnyCPU">
+      <Configuration>Release</Configuration>
+      <Platform>AnyCPU</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>7be14508-2215-4c9b-8dc3-8c55e5d2631e</ProjectGuid>
+  </PropertyGroup>
+  <PropertyGroup>
+    <NuProjPath Condition=" '$(NuProjPath)' == '' ">$(MSBuildExtensionsPath)\NuProj\</NuProjPath>
+  </PropertyGroup>
+  <Import Project="$(NuProjPath)\NuProj.props" Condition="Exists('$(NuProjPath)\NuProj.props')" />
+  <PropertyGroup Label="Configuration">
+    <Id>Pk_OrleansUtils_Consul_Nuget</Id>
+    <Version>0.3.0</Version>
+    <Title>Pk.OrleansUtils.Consul.Nuget</Title>
+    <Authors>Pawel K.</Authors>
+    <Owners>Pawel K.</Owners>
+    <Summary>Consul as systemstore for Orleans membership table</Summary>
+    <Description>Pk.OrleansUtils.Consul.Nuget</Description>
+    <ReleaseNotes>
+    </ReleaseNotes>
+    <ProjectUrl>
+      https://github.com/kowalot/Pk.OrleansUtils
+    </ProjectUrl>
+    <LicenseUrl>
+      https://github.com/kowalot/Pk.OrleansUtils
+    </LicenseUrl>
+    <Copyright>Copyright © Pawel K.</Copyright>
+    <Tags>Orleans Consul</Tags>
+  </PropertyGroup>
+  <ItemGroup>
+    <Content Include="Readme.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Pk.OrleansUtils.Consul\Pk.OrleansUtils.Consul.csproj" />
+  </ItemGroup>
+  <Import Project="$(NuProjPath)\NuProj.targets" />
+</Project>

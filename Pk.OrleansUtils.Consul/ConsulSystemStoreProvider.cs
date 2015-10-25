@@ -188,7 +188,7 @@ namespace Pk.OrleansUtils.Consul
             var keyPath = new string[] { ORLEANS_CATALOG_KEY, DeploymentId, ORLEANS_I_AM_ALIVE_FOLDER_KEY, entry.SiloAddress.ToParsableString() };
             var storedKV = (await Consul.ReadKVEntries(new { }, keyPath)).FirstOrDefault();
             KVEntry kv = storedKV ?? KVEntry.CreateForKey(keyPath);
-            kv.SetValue(DateTime.UtcNow.ToString());
+            kv.SetValue(DateTime.Now.ToString());
             await Consul.PutKV(kv);
         }
 

@@ -151,9 +151,6 @@ namespace Pk.OrleansUtils.Tests
         }
     }
 
-      
-
-       
 
         #endregion
 
@@ -162,22 +159,7 @@ namespace Pk.OrleansUtils.Tests
         public MyTestingHost SiloHost { get; set; }
 
 
-        public class MyTestingHost : TestingSiloHost
-        {
-            private TestingClientOptions clientOptions;
-            private TestingSiloOptions siloOptions;
-
-            public MyTestingHost(TestingSiloOptions siloOptions, TestingClientOptions clientOptions):
-                base(siloOptions,clientOptions)
-            {
-                this.siloOptions = siloOptions;
-                this.clientOptions = clientOptions;
-                
-
-            }
-
-            public TraceLogger Logger { get { return this.logger as TraceLogger; } }
-        }
+      
 
         // Use TestInitialize to run code before running each test 
         [TestInitialize()]

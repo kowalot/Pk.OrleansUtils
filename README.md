@@ -33,6 +33,16 @@ Orleans clients can use following configuration
 
  Add to your Orleans server configuration file following attributes
 
+
+``` xml
+    <StorageProviders>
+      <!-- .... -->
+      <Provider Type="Pk.OrleansUtils.ElasticSearch.ElasticStorageProvider" Name="Default" DataConnectionString="index=orleans;Host=localhost" />
+      <!-- .... -->
+    </StorageProviders>
+```                
+
+
 ``` xml
 
   <SystemStore SystemStoreType="Custom"  
@@ -44,6 +54,7 @@ Orleans clients can use following configuration
 
 ## Known issues
 
-Due to some limitations in Orleans 1.0.10,  DataConnectionString and DataConnectionStringForReminders are the same
+Due to some limitations in Orleans 1.0.10, DataConnectionStringForReminders is exact copy of  DataConnectionString if you configure it via configuration file.
+
 It has been eliminated by https://github.com/dotnet/orleans/pull/925
  

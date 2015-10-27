@@ -44,4 +44,6 @@ Orleans clients can use following configuration
 
 ## Known issues
 
-Due to some limitations of Orleans 1.0.10,  DataConnectionString and DataConnectionStringForReminders are the same
+Due to some limitations in Orleans 1.0.10,  DataConnectionString and DataConnectionStringForReminders are the same
+It has been eliminated by https://github.com/dotnet/orleans/pull/925
+ 

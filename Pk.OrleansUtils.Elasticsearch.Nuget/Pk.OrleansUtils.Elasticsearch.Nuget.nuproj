@@ -19,7 +19,7 @@
   <Import Project="$(NuProjPath)\NuProj.props" Condition="Exists('$(NuProjPath)\NuProj.props')" />
   <PropertyGroup Label="Configuration">
     <Id>Pk.OrleansUtils.Elasticsearch.Nuget</Id>
-    <Version>0.6.0</Version>
+    <Version>0.7</Version>
     <Title>Pk.OrleansUtils.Elasticsearch</Title>
     <Authors>Pawel K.</Authors>
     <Owners>Pawel K.</Owners>

@@ -4,8 +4,9 @@
 	For a detailed reference, see "Orleans Configuration Reference.html".
 -->
 <ClientConfiguration xmlns="urn:orleans">
-  <GatewayProvider ProviderType="Config"/>
-  <Gateway Address="localhost" Port="30000"/>
-  <Statistics MetricsTableWriteInterval="30s" PerfCounterWriteInterval="30s" LogWriteInterval="300s" WriteLogStatisticsToTable="true"/>
-  
+  <SystemStore SystemStoreType="Custom"
+               DeploymentId="DevHost"
+               CustomGatewayProviderAssemblyName="Pk.OrleansUtils.Consul"
+               DataConnectionString="host=localhost;datacenter=dc1"
+  />
 </ClientConfiguration>

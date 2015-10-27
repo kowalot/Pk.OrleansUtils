@@ -7,6 +7,7 @@ using Orleans.Storage;
 using Nest;
 using System.Collections.Generic;
 using Newtonsoft.Json;
+using System.Linq;
 
 namespace Pk.OrleansUtils.ElasticSearch
 {
@@ -61,7 +62,7 @@ namespace Pk.OrleansUtils.ElasticSearch
                 var nv = part.Split('=');
                 if (nv.Length == 2)
                 {
-                    var pi = connectionInfo.GetType().GetProperty(nv[0]);
+                    var pi = connectionInfo.GetType().GetProperties().FirstOrDefault(t => t.Name.ToLowerInvariant() == nv[0]);
                     if (pi != null)
                     {
                         switch (Type.GetTypeCode(pi.PropertyType))

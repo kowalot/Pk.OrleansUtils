@@ -55,6 +55,7 @@
   <ItemGroup>
     <Compile Include="ConsulClient.cs" />
     <Compile Include="ConsulConnectionInfo.cs" />
+    <Compile Include="ConsulGrainSiloWrapper.cs" />
     <Compile Include="ConsulMembershipTableEntry.cs" />
     <Compile Include="ConsulSystemStoreException.cs" />
     <Compile Include="ConsulSystemStoreProvider.cs" />

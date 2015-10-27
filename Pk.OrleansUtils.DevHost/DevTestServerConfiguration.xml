@@ -3,17 +3,18 @@
   <Globals >
     <StorageProviders>
       <Provider Type="Orleans.Storage.MemoryStorage" Name="MemoryStore" />
-      <Provider Type="Pk.OrleansUtils.ElasticSearch.ElasticStorageProvider" Name="Default" DataConnectionString="IndexName=orleans;Host=localhost" />
+      <Provider Type="Pk.OrleansUtils.ElasticSearch.ElasticStorageProvider" Name="Default" DataConnectionString="index=orleans;Host=localhost" />
       <!-- To use Azure storage, uncomment one of the following lines: -->
       <!--<Provider Type="Orleans.Storage.AzureTableStorage" Name="AzureStore" DataConnectionString="UseDevelopmentStorage=true" />-->
       <!--<Provider Type="Orleans.Storage.AzureTableStorage" Name="AzureStore" DataConnectionString="DefaultEndpointsProtocol=https;AccountName=MYACCOUNTNAME;AccountKey=MYACCOUNTKEY" />-->
     </StorageProviders>
     
     <SeedNode Address="localhost" Port="11111" />
-    <SystemStore SystemStoreType="Custom"  DataConnectionString="host=localhost;datacenter=dc1"
+    <SystemStore SystemStoreType="Custom"  DataConnectionString="host=localhost;datacenter=dc1;index=reminders"
              MembershipTableAssembly="Pk.OrleansUtils.Consul"
              ReminderTableAssembly="Pk.OrleansUtils.ElasticSearch"
-             DataConnectionStringForReminders="Bingo"
+             DataConnectionStringForReminders="host=localhost;index=reminders"
+             DeploymentId="DevHost"
                  />
   </Globals>
   <Defaults>

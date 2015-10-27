@@ -26,6 +26,8 @@ using System.Threading.Tasks;
 using Orleans;
 using Pk.OrleansUtils.Interfaces;
 using Pk.OrleansUtils.ElasticSearch;
+using Pk.OrleansUtils.Consul;
+using System.Threading;
 
 namespace Pk.OrleansUtils.DevHost
 {
@@ -45,6 +47,7 @@ namespace Pk.OrleansUtils.DevHost
                 AppDomainInitializerArguments = args,
             });
 
+            Thread.Sleep(10000);
             
             GrainClient.Initialize("DevTestClientConfiguration.xml");
 

@@ -10,6 +10,13 @@ namespace Pk.OrleansUtils
     /// </summary>
     public class MyGrain : Grain<MyGrainState>, IMyGrain
     {
+        public async Task<int> IncrementAndGet(int incValue)
+        {
+            State.Counter += incValue;
+            await WriteStateAsync();
+            return State.Counter;
+        }
+
         public Task TaskDoSomething()
         {
             State.Something = "Touched: "+DateTime.Now.ToString();

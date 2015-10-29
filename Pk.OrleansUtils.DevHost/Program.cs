@@ -44,10 +44,12 @@ namespace Pk.OrleansUtils.DevHost
             AppDomain hostDomain = AppDomain.CreateDomain("OrleansHost", null, new AppDomainSetup
             {
                 AppDomainInitializer = InitSilo,
-                AppDomainInitializerArguments = args,
+                AppDomainInitializerArguments = args//,
+               // ShadowCopyFiles = "true",
+              //  CachePath = @"c:\temp\orleans"
             });
 
-            Thread.Sleep(10000);
+            Thread.Sleep(20000);
             
             GrainClient.Initialize("DevTestClientConfiguration.xml");
 
@@ -56,10 +58,13 @@ namespace Pk.OrleansUtils.DevHost
             //       or initializing an HTTP front end for accepting incoming requests.
             var mygrain = GrainClient.GrainFactory.GetGrain<IMyGrain>(Guid.Empty);
 
-            mygrain.TaskDoSomething().Wait();
-
-            var reminderTest = GrainClient.GrainFactory.GetGrain<IReminderTest>("bingo");
-            reminderTest.RegisterReminder(60);
+            for (int i = 0; i < 100; i++)
+            {
+                var val = mygrain.IncrementAndGet(1);
+                val.Wait();
+                Console.WriteLine($"Value:{val.Result}");
+                Thread.Sleep(1000);
+            }
 
             Console.WriteLine("Orleans Silo is running.\nPress Enter to terminate...");
             Console.ReadLine();

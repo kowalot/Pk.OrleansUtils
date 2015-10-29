@@ -31,7 +31,7 @@ Orleans clients can use following configuration
 
 ## Pk.OrleansUtils.Elastic - ElasticSearch based grains and remainders storage provider
 
- Add to your Orleans server configuration file following attributes
+ Add to your Orleans server configuration file following elements
 
 
 ``` xml

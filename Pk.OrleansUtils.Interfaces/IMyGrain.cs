@@ -9,5 +9,7 @@ namespace Pk.OrleansUtils.Interfaces
 	public interface IMyGrain : IGrainWithGuidKey
     {
         Task TaskDoSomething();
+
+        Task<int> IncrementAndGet(int incValue);
     }
 }

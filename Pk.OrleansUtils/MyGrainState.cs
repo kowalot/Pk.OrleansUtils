@@ -17,6 +17,8 @@ namespace Pk.OrleansUtils
 
     public class MyGrainState : GrainState
     {
+        public int Counter { get; set; }
+
         public string Something { get; set; }
 
         public List<string> List { get; set; }

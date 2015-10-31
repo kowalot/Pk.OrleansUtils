@@ -98,6 +98,7 @@
   <ItemGroup>
     <Content Include="DevTestClientConfiguration.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <SubType>Designer</SubType>
     </Content>
     <Content Include="DevTestServerConfiguration.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
@@ -111,9 +112,9 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Pk.Orleans.ApplicationInsights\Pk.Orleans.ApplicationInsights.csproj">
+    <ProjectReference Include="..\Pk.OrleansUtils.ApplicationInsights\Pk.OrleansUtils.ApplicationInsights.csproj">
       <Project>{d164391a-8928-497e-8ab0-b703690e9ec1}</Project>
-      <Name>Pk.Orleans.ApplicationInsights</Name>
+      <Name>Pk.OrleansUtils.ApplicationInsights</Name>
     </ProjectReference>
     <ProjectReference Include="..\Pk.OrleansUtils.Consul\Pk.OrleansUtils.Consul.csproj">
       <Project>{664b2f23-b7f0-48e0-af73-6dcb465a9b72}</Project>

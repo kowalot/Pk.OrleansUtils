@@ -5,7 +5,7 @@ using System.Runtime.Serialization;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Pk.Orleans.ApplicationInsights
+namespace Pk.OrleansUtils.ApplicationInsights
 {
     public class AppInException
     {

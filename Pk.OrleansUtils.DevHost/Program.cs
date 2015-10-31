@@ -28,6 +28,7 @@ using Pk.OrleansUtils.Interfaces;
 using Pk.OrleansUtils.ElasticSearch;
 using Pk.OrleansUtils.Consul;
 using System.Threading;
+using Pk.OrleansUtils.ApplicationInsights;
 
 namespace Pk.OrleansUtils.DevHost
 {

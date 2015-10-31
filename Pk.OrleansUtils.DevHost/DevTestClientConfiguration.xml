@@ -4,9 +4,22 @@
 	For a detailed reference, see "Orleans Configuration Reference.html".
 -->
 <ClientConfiguration xmlns="urn:orleans">
+  <StatisticsProviders>
+    <Provider Type="Pk.OrleansUtils.ApplicationInsights.AppInStatisticsPublisher"
+                  Name="ClientStatistics"
+                  InstrumentationKey="%OrleansInstrumentationKey%"
+                  ReportsStatsEnabled="true"
+    />
+  </StatisticsProviders>
+
   <SystemStore SystemStoreType="Custom"
                DeploymentId="DevHost"
                CustomGatewayProviderAssemblyName="Pk.OrleansUtils.Consul"
                DataConnectionString="host=localhost;datacenter=dc1"
   />
+  <Statistics 
+    ProviderType="ClientStatistics"
+    MetricsTableWriteInterval="10s" PerfCounterWriteInterval="10s" LogWriteInterval="20s" WriteLogStatisticsToTable="true"
+                />
+
 </ClientConfiguration>

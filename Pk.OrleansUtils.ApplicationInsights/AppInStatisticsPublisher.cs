@@ -11,11 +11,35 @@ using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Pk.Orleans.ApplicationInsights
+namespace Pk.OrleansUtils.ApplicationInsights
 {
-    //, IConfigurableClientMetricsDataPublisher, IConfigurableStatisticsPublisher, 
-    public class AppInStatisticsPublisher : IConfigurableSiloMetricsDataPublisher, IConfigurableStatisticsPublisher,IProvider
+    //, 
+    public class AppInStatisticsPublisher : IConfigurableSiloMetricsDataPublisher, IConfigurableStatisticsPublisher,IProvider, IConfigurableClientMetricsDataPublisher, ISiloMetricsDataPublisher
     {
+        public AppInStatisticsPublisher()
+        {
+
+        }
+        class AppInInitializer : IContextInitializer
+        {
+            public string DeploymentId { get; set; }
+            public AppInInitializer()
+            {
+
+            }
+
+            public AppInInitializer(string deploymentId)
+            {
+                DeploymentId = deploymentId;
+            }
+
+            public void Initialize(TelemetryContext ctx)
+            {
+                ctx.Component.Version = DeploymentId;
+            }
+        }
+
+
         public const string InstrumentationKeyProperty = "InstrumentationKey";
         public const string ReportsStatsEnabledKeyProperty = "ReportsStatsEnabled";
 
@@ -36,10 +60,16 @@ namespace Pk.Orleans.ApplicationInsights
         public string SiloName { get; private set; }
         public string HostName { get; private set; }
         public bool ReportStatsEnabled { get; private set; }
+        public bool Initialized { get; private set; }
 
         public void AddConfiguration(string deploymentId, string hostName, string clientId, IPAddress address)
         {
-            throw new NotImplementedException();
+            //throw new NotImplementedException();
+            TelemetryConfiguration.Active.ContextInitializers.Add(new AppInInitializer(DeploymentId));
+            var tc = new TelemetryConfiguration();
+            Telemetry = new TelemetryClient();
+            Telemetry.InstrumentationKey = InstrumentationKey;
+            Initialized = true;
         }
 
         public void AddConfiguration(string deploymentId, bool isSilo, string siloName, SiloAddress address, IPEndPoint gateway, string hostName)
@@ -47,6 +77,11 @@ namespace Pk.Orleans.ApplicationInsights
             SiloName = siloName;
             DeploymentId = deploymentId;
             HostName = hostName;
+            TelemetryConfiguration.Active.ContextInitializers.Add(new AppInInitializer(DeploymentId));
+            var tc = new TelemetryConfiguration();
+            Telemetry = new TelemetryClient();
+            Telemetry.InstrumentationKey = InstrumentationKey;
+            Initialized = true;
         }
 
         public Task Init(string name, IProviderRuntime providerRuntime, IProviderConfiguration config)
@@ -70,15 +105,13 @@ namespace Pk.Orleans.ApplicationInsights
                 InstrumentationKey = Environment.GetEnvironmentVariable(InstrumentationKey.Substring(1, InstrumentationKey.Length - 2));
             if (String.IsNullOrEmpty(InstrumentationKey))
                 throw new AppInException.InvalidConfiguration("Invalid " + InstrumentationKeyProperty + " value.");
-            var tc = new TelemetryConfiguration();
-            Telemetry = new TelemetryClient();
-            Telemetry.InstrumentationKey = InstrumentationKey;
             return Task.CompletedTask;
         }
 
         public Task Init(ClientConfiguration config, IPAddress address, string clientId)
         {
-            throw new NotImplementedException();
+            // throw new NotImplementedException();
+            return Task.CompletedTask;
         }
 
         public Task Init(string deploymentId, string storageConnectionString, SiloAddress siloAddress, string siloName, IPEndPoint gateway, string hostName)
@@ -93,17 +126,39 @@ namespace Pk.Orleans.ApplicationInsights
 
         public Task ReportMetrics(IClientPerformanceMetrics metricsData)
         {
-            throw new NotImplementedException();
+            Telemetry.TrackMetric("CpuUsage", metricsData.CpuUsage);
+            Telemetry.TrackMetric("AvailablePhysicalMemory", metricsData.AvailablePhysicalMemory);
+            Telemetry.TrackMetric("MemoryUsage", metricsData.MemoryUsage);
+            Telemetry.TrackMetric("ReceivedMessages", metricsData.ReceivedMessages);
+            Telemetry.TrackMetric("ReceiveQueueLength", metricsData.ReceiveQueueLength);
+            Telemetry.TrackMetric("SendQueueLength", metricsData.SendQueueLength);
+            Telemetry.TrackMetric("SentMessages", metricsData.SentMessages);
+            Telemetry.TrackMetric("TotalPhysicalMemory", metricsData.TotalPhysicalMemory);
+            Telemetry.TrackMetric("ConnectedGatewayCount", metricsData.ConnectedGatewayCount);
+            return Task.CompletedTask;
         }
 
         public Task ReportMetrics(ISiloPerformanceMetrics metricsData)
         {
+            if (!Initialized) return Task.CompletedTask;
             var pageView = new PageViewTelemetry(SiloName);
+            pageView.Properties.Add("deploymentId", DeploymentId);
             Telemetry.TrackMetric("ActivationCount", metricsData.ActivationCount);
             Telemetry.TrackMetric("CpuUsage", metricsData.CpuUsage);
             Telemetry.TrackMetric("AvailablePhysicalMemory", metricsData.AvailablePhysicalMemory);
-            IDictionary<string, double> metrics = new Dictionary<string, double>();
-            Telemetry.TrackPageView(pageView);
+            Telemetry.TrackMetric("ClientCount", metricsData.ClientCount);
+            Telemetry.TrackMetric("MemoryUsage", metricsData.MemoryUsage);
+            Telemetry.TrackMetric("ReceivedMessages", metricsData.ReceivedMessages);
+            Telemetry.TrackMetric("ReceiveQueueLength", metricsData.ReceiveQueueLength);
+            Telemetry.TrackMetric("RecentlyUsedActivationCount", metricsData.RecentlyUsedActivationCount);
+            Telemetry.TrackMetric("RequestQueueLength", metricsData.RequestQueueLength);
+            Telemetry.TrackMetric("SendQueueLength", metricsData.SendQueueLength);
+            Telemetry.TrackMetric("SentMessages", metricsData.SentMessages);
+            Telemetry.TrackMetric("TotalPhysicalMemory", metricsData.TotalPhysicalMemory);
+            var props = new Dictionary<string, string>();
+            props.Add("DeploymentId", DeploymentId);
+            props.Add("HostName", HostName);
+            Telemetry.TrackEvent("ReportMetrics",props);
             Telemetry.Flush();
             return Task.CompletedTask;
         }

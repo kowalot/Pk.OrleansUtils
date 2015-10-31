@@ -9,7 +9,7 @@
       <!--<Provider Type="Orleans.Storage.AzureTableStorage" Name="AzureStore" DataConnectionString="DefaultEndpointsProtocol=https;AccountName=MYACCOUNTNAME;AccountKey=MYACCOUNTKEY" />-->
     </StorageProviders>
     <StatisticsProviders>
-      <Provider Type="Pk.Orleans.ApplicationInsights.AppInStatisticsPublisher"
+      <Provider Type="Pk.OrleansUtils.ApplicationInsights.AppInStatisticsPublisher"
                     Name="Statistics" 
                     InstrumentationKey="%OrleansInstrumentationKey%" 
                     ReportsStatsEnabled="true"
@@ -32,7 +32,6 @@
       <TraceLevelOverride LogPrefix="Application" TraceLevel="Info" />
     </Tracing>
     <Statistics MetricsTableWriteInterval="10s" PerfCounterWriteInterval="10s" LogWriteInterval="20s" WriteLogStatisticsToTable="true" 
-                
                 />
   </Defaults>
   <Override Node="Primary" >

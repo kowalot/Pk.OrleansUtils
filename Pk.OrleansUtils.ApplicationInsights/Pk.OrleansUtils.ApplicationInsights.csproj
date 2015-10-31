@@ -7,8 +7,8 @@
     <ProjectGuid>{D164391A-8928-497E-8AB0-B703690E9EC1}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Pk.Orleans.ApplicationInsights</RootNamespace>
-    <AssemblyName>Pk.Orleans.ApplicationInsights</AssemblyName>
+    <RootNamespace>Pk.OrleansUtils.ApplicationInsights</RootNamespace>
+    <AssemblyName>Pk.OrleansUtils.ApplicationInsights</AssemblyName>
     <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>

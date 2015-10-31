@@ -8,6 +8,13 @@
       <!--<Provider Type="Orleans.Storage.AzureTableStorage" Name="AzureStore" DataConnectionString="UseDevelopmentStorage=true" />-->
       <!--<Provider Type="Orleans.Storage.AzureTableStorage" Name="AzureStore" DataConnectionString="DefaultEndpointsProtocol=https;AccountName=MYACCOUNTNAME;AccountKey=MYACCOUNTKEY" />-->
     </StorageProviders>
+    <StatisticsProviders>
+      <Provider Type="Pk.Orleans.ApplicationInsights.AppInStatisticsPublisher"
+                    Name="Statistics" 
+                    InstrumentationKey="%OrleansInstrumentationKey%" 
+                    ReportsStatsEnabled="true"
+    />
+    </StatisticsProviders>
     
     <SeedNode Address="localhost" Port="11111" />
     <SystemStore SystemStoreType="Custom"  DataConnectionString="host=localhost;datacenter=dc1;index=reminders"
@@ -15,6 +22,7 @@
              ReminderTableAssembly="Pk.OrleansUtils.ElasticSearch"
              DataConnectionStringForReminders="host=localhost;index=reminders"
              DeploymentId="DevHost"
+                 
                  />
   </Globals>
   <Defaults>
@@ -23,7 +31,9 @@
     <Tracing DefaultTraceLevel="Info" TraceToConsole="true" TraceToFile="{0}-{1}.log">
       <TraceLevelOverride LogPrefix="Application" TraceLevel="Info" />
     </Tracing>
-    <Statistics MetricsTableWriteInterval="30s" PerfCounterWriteInterval="30s" LogWriteInterval="300s" WriteLogStatisticsToTable="true" />
+    <Statistics MetricsTableWriteInterval="10s" PerfCounterWriteInterval="10s" LogWriteInterval="20s" WriteLogStatisticsToTable="true" 
+                
+                />
   </Defaults>
   <Override Node="Primary" >
     <Networking Address="localhost" Port="11111" />

@@ -53,10 +53,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ConsulCheckDescriptor.cs" />
     <Compile Include="ConsulClient.cs" />
     <Compile Include="ConsulConnectionInfo.cs" />
     <Compile Include="ConsulGrainSiloWrapper.cs" />
     <Compile Include="ConsulMembershipTableEntry.cs" />
+    <Compile Include="ConsulServiceDescriptor.cs" />
     <Compile Include="ConsulSystemStoreException.cs" />
     <Compile Include="ConsulSystemStoreProvider.cs" />
     <Compile Include="KVEntry.cs" />

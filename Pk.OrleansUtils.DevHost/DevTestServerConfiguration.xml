@@ -17,10 +17,10 @@
     </StatisticsProviders>
     
     <SeedNode Address="localhost" Port="11111" />
-    <SystemStore SystemStoreType="Custom"  DataConnectionString="host=localhost;datacenter=dc1;index=reminders"
+    <SystemStore SystemStoreType="Custom"  DataConnectionString="host=localhost;datacenter=dc1;index=reminders;mode=2"
              MembershipTableAssembly="Pk.OrleansUtils.Consul"
              ReminderTableAssembly="Pk.OrleansUtils.ElasticSearch"
-             DataConnectionStringForReminders="host=localhost;index=reminders"
+             DataConnectionStringForReminders="host=localhost;index=reminders;mode=2"
              DeploymentId="DevHost"
                  
                  />

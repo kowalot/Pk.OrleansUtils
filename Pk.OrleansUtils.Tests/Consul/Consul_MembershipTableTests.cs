@@ -10,6 +10,7 @@ using System.IO;
 using System.Net;
 using System.Collections.Generic;
 using System.Linq;
+using Pk.OrleansUtils.Tests.Consul;
 
 namespace Pk.OrleansUtils.Tests
 {
@@ -26,7 +27,7 @@ namespace Pk.OrleansUtils.Tests
     [DeploymentItem("OrleansRuntime.dll")]
     [DeploymentItem("Pk.OrleansUtils.dll")]
     [DeploymentItem("Pk.OrleansUtils.Consul.dll")]
-    public class Consul_MembershipTableTests
+    public class Consul_MembershipTableTests : ConsulMembershipTestsBase
     {
 
         // Use ClassInitialize to run code before running the first test in the class
@@ -36,56 +37,6 @@ namespace Pk.OrleansUtils.Tests
             TraceLogger.Initialize(new NodeConfiguration());
         }
 
-
-        public ConsulSystemStoreProvider ConsulMembershipTable { get; set; }
-
-        public MyTestingHost SiloHost { get; set; }
-        public TestingSiloOptions SiloHostConfig { get; private set; }
-
-        public ClusterConfiguration ClusterConfig { get; set; }
-
-        private void Init()
-        {
-            SiloHostConfig = new TestingSiloOptions
-            {
-                StartPrimary = true,
-                ParallelStart = false,
-                PickNewDeploymentId = true,
-                StartFreshOrleans = true,
-                StartSecondary = false,
-                SiloConfigFile = new FileInfo("OrleansConfigurationForTesting.xml"),
-                LivenessType = Orleans.Runtime.Configuration.GlobalConfiguration.LivenessProviderType.MembershipTableGrain,
-                StartClient = true
-            };
-
-            var clientOptions = new TestingClientOptions
-            {
-                ProxiedGateway = true,
-                Gateways = new List<IPEndPoint>(new[]
-                    {
-                        new IPEndPoint(IPAddress.Loopback, TestingSiloHost.ProxyBasePort),
-                    }),
-                PreferedGatewayIndex = 0
-            };
-            ClusterConfig = new ClusterConfiguration();
-            ClusterConfig.LoadFromFile(new FileInfo("OrleansConfigurationForConsulTesting.xml").FullName);
-            ClusterConfig.Globals.DataConnectionStringForReminders = "host=localhost;datacenter=dc1";
-            SiloHost = new MyTestingHost(SiloHostConfig, clientOptions);
-            ConsulMembershipTable = new ConsulSystemStoreProvider();
-        }
-        [TestInitialize]
-        public  void BeforeEachTest()
-        {
-
-            Init();
-        }
-        [TestCleanup]
-        public void AfterEachTest()
-        {
-            MyTestingHost.StopAllSilos();
-            SiloHost = null;
-            ConsulMembershipTable.DeleteMembershipTableEntries(ClusterConfig.Globals.DeploymentId);
-        }
 
         [TestMethod, TestCategory("Membership"), TestCategory("Consul")]
         public async Task MembershipTable_Consul_Init()

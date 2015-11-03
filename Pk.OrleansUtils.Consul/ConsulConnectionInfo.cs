@@ -7,6 +7,13 @@ using System.Web;
 
 namespace Pk.OrleansUtils.Consul
 {
+
+    public enum ConsulIntegrationMode
+    {
+        KV = 1,
+        AsConsulService=2
+    }
+
     public class ConsulConnectionInfo
     {
         public string Host { get; set; } = "localhost";
@@ -16,6 +23,13 @@ namespace Pk.OrleansUtils.Consul
         public int Version { get; set; } = 1;
 
         public string Datacenter { get; set; } = "";
+
+        public ConsulIntegrationMode Mode { get; set; }
+
+        public ConsulConnectionInfo()
+        {
+            Mode = ConsulIntegrationMode.KV;
+        }
 
         public static ConsulConnectionInfo FromConnectionString(string dataConnectionString)
         {

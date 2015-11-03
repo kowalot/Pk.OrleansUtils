@@ -14,11 +14,16 @@ namespace Pk.OrleansUtils.Consul
     public class ConsulClient
     {
         private ConsulConnectionInfo consulInfo;
-        public ConsulConnectionInfo ConsulInfo { get;}
+        public ConsulConnectionInfo ConsulInfo { get { return consulInfo; } }
 
         public const string ConsulProtocolDataMediaType = "application/json";
         public const string KV_ENTRIES = "kv";
-
+        public const string AGENT_SERVICE  = "agent/service";
+        public const string REGISTER_COMMAND = "register";
+        public const string AGENT_CHECK = "agent/check";
+        public const string CHECK_PASS= "pass";
+        public const string CHECK_REGISTER = "register";
+        
 
         public ConsulClient(ConsulConnectionInfo consulInfo)
         {
@@ -83,6 +88,11 @@ namespace Pk.OrleansUtils.Consul
           
             return new UriBuilder("http", consulInfo.Host, consulInfo.Port, String.Format("/v{0}/{1}/{2}", consulInfo.Version, commandType, String.Join(@"/", path)), GetExtraValuesFragment(extraValues)).Uri;
         }
+        internal Uri GetLocalAgentUri(string commandType, object extraValues, params string[] path)
+        {
+
+            return new UriBuilder("http", "localhost", consulInfo.Port, String.Format("/v{0}/{1}/{2}", consulInfo.Version, commandType, String.Join(@"/", path)), GetExtraValuesFragment(extraValues)).Uri;
+        }
 
         public async Task<IEnumerable<KVEntry>> ReadKVEntries(object extraValues, params string[] keyPath)
         {
@@ -100,6 +110,59 @@ namespace Pk.OrleansUtils.Consul
                     }
                     return new List<KVEntry>();
                 }catch(Exception ex)
+                {
+                    throw;
+                }
+            }
+        }
+
+        public async Task<bool> RegisterCheck(ConsulCheckDescriptor check)
+        {
+            using (var client = UsingHttpClient())
+            {
+                try
+                {
+                    var uri = GetLocalAgentUri(AGENT_CHECK, new { }, CHECK_REGISTER);
+                    var content = new StringContent(JsonConvert.SerializeObject(check));
+                    var res = await client.PostAsync(uri, content);
+                    return (res.StatusCode == HttpStatusCode.OK);
+                }
+                catch (Exception ex)
+                {
+                    throw;
+                }
+            }
+        }
+
+        public async Task<bool> RegisterService(ConsulServiceDescriptor service)
+        {
+            using (var client = UsingHttpClient())
+            {
+                try
+                {
+                    var uri = GetLocalAgentUri(AGENT_SERVICE, new { }, REGISTER_COMMAND);
+                    var content = new StringContent(JsonConvert.SerializeObject(service));
+                    var res = await client.PostAsync(uri,content);
+                    return (res.StatusCode == HttpStatusCode.OK);
+                }
+                catch (Exception ex)
+                {
+                    throw;
+                }
+            }
+        }
+
+        public async Task<bool> CheckPass(string instanceName)
+        {
+            using (var client = UsingHttpClient())
+            {
+                try
+                {
+                    var uri = GetLocalAgentUri(AGENT_CHECK, new { }, CHECK_PASS,instanceName);
+                    var res = await client.GetAsync(uri);
+                    return (res.StatusCode == HttpStatusCode.OK);
+                }
+                catch (Exception ex)
                 {
                     throw;
                 }

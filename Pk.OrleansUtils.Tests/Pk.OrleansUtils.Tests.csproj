@@ -82,8 +82,10 @@
   <ItemGroup>
     <Compile Include="Consul\ConsulClientTests.cs" />
     <Compile Include="Consul\ConsulConnectionInfoTests.cs" />
+    <Compile Include="Consul\ConsulMembershipTestsBase.cs" />
     <Compile Include="Consul\Consul_MembershipTableTests.cs" />
     <Compile Include="Consul\ConsulSystemStoreTests.cs" />
+    <Compile Include="Consul\OrleansAsConsulServiceTests.cs" />
     <Compile Include="Elastic_ReminderTableUnitTests.cs" />
     <Compile Include="KVEntryTests.cs" />
     <Compile Include="MyTestingHost.cs" />

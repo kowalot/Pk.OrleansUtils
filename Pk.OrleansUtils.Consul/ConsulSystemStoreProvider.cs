@@ -41,6 +41,7 @@ namespace Pk.OrleansUtils.Consul
         }
 
         public string DeploymentId { get; private set; }
+        public GlobalConfiguration GlobalConfiguration { get; private set; }
 
         public async Task DeleteMembershipTableEntries(string deploymentId)
         {
@@ -75,6 +76,7 @@ namespace Pk.OrleansUtils.Consul
                 // create new root catalog
                 await CreateRootCatalog(tryInitTableVersion);
             }
+          
         }
 
         public async Task InitializeGatewayListProvider(ClientConfiguration clientConfiguration, TraceLogger traceLogger)
@@ -82,15 +84,48 @@ namespace Pk.OrleansUtils.Consul
             DeploymentId = clientConfiguration.DeploymentId;
             maxStaleness = clientConfiguration.GatewayListRefreshPeriod;
             await InitializeConfig(clientConfiguration.DataConnectionString,false,traceLogger);
+
         }
 
         public async Task InitializeMembershipTable(GlobalConfiguration globalConfiguration, bool tryInitTableVersion, TraceLogger traceLogger)
         {
             DeploymentId = globalConfiguration.DeploymentId;
+            this.GlobalConfiguration = globalConfiguration;
             await InitializeConfig(globalConfiguration.DataConnectionString, tryInitTableVersion, traceLogger);
+            switch (Consul.ConsulInfo.Mode)
+            {
+                case ConsulIntegrationMode.AsConsulService:
+                    if (!globalConfiguration.LivenessEnabled || globalConfiguration.IAmAliveTablePublishTimeout == TimeSpan.Zero)
+                        throw new ConsulSystemStoreException.InvalidConfiguration("Liveness and IAmAliveTablePublishTimeout must be configured in selected system store mode.");
+                    break;
+                default:
+                    break;
+            }
+
         }
 
+        private async Task<bool> RegisterSilo(MembershipEntry entry)
+        {
+            var service = new ConsulServiceDescriptor();
+            service.ID = entry.InstanceName;
+            service.Name = "orleans";
+            service.Tags = new List<string>();
+            service.Tags.Add(DeploymentId);
+            service.Tags.Add("orleans");
+            service.Tags.Add(entry.RoleName);
+            service.Port = entry.SiloAddress.Endpoint.Port;
 
+
+            var ret = await Consul.RegisterService(service);
+            var check = new ConsulCheckDescriptor();
+            check.ServiceID = service.ID;
+            check.TTL = $"{GlobalConfiguration.IAmAliveTablePublishTimeout.TotalSeconds+1}s";// +1 just to avoid hazards
+            check.Name = "Orleans silo availability";
+            check.Notes = $"Generation:{entry.SiloAddress.Generation} Updated at:{DateTime.UtcNow.ToString("O")}";
+            check.ID = GetCheckId(entry);
+            var ret1 = await Consul.RegisterCheck(check);
+            return ret && ret1;
+        }
 
         private async Task CreateRootCatalog(bool recreate)
         {
@@ -163,6 +198,20 @@ namespace Pk.OrleansUtils.Consul
             if (consulTable.Members.ContainsKey(entry.SiloAddress.ToParsableString()))
                 throw new ConsulSystemStoreException.DuplicatedEntry();
             consulTable.Members.Add(entry.SiloAddress.ToParsableString(),new ConsulMembershipEntry(entry));
+
+            switch (Consul.ConsulInfo.Mode)
+            {
+                case ConsulIntegrationMode.AsConsulService:
+                    // Register silo in local agent
+                    if (!await RegisterSilo(entry))
+                    {
+                        throw new ConsulSystemStoreException.ConsulServiceRegistrationFailed();
+                    }
+                    break;
+                default:
+                    break;
+            }
+
             return await consulTable.Save(Consul,tableVersion);
         }
 
@@ -181,7 +230,27 @@ namespace Pk.OrleansUtils.Consul
             var storedKV = (await Consul.ReadKVEntries(new { }, keyPath)).FirstOrDefault();
             KVEntry kv = storedKV ?? KVEntry.CreateForKey(keyPath);
             kv.SetValue(DateTime.UtcNow.ToString());
+
+            switch (this.Consul.ConsulInfo.Mode)
+            {
+                case ConsulIntegrationMode.KV:
+                    break;
+                case ConsulIntegrationMode.AsConsulService:
+                    if (!await Consul.CheckPass(GetCheckId(entry)))
+                    {
+                        this.logger.Warn(1,"Consul pass check failed.Silo may be unavailable for clients.");
+                    }
+                    break;
+                default:
+                    break;
+            }
             await Consul.PutKV(kv);
+
+        }
+
+        private string GetCheckId(MembershipEntry entry)
+        {
+            return entry.SiloAddress.Endpoint.ToString().Replace(".", "_").Replace(":", "__");
         }
 
         /// <summary>

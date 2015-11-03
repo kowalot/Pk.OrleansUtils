@@ -37,6 +37,10 @@ namespace Pk.OrleansUtils.DevHost
     /// </summary>
     public class Program
     {
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="args"></param>
         static void Main(string[] args)
         {
             // The Orleans silo environment is initialized in its own app domain in order to more
@@ -50,22 +54,19 @@ namespace Pk.OrleansUtils.DevHost
               //  CachePath = @"c:\temp\orleans"
             });
 
-            Thread.Sleep(20000);
+            //Thread.Sleep(20000);
             
-            GrainClient.Initialize("DevTestClientConfiguration.xml");
+            //GrainClient.Initialize("DevTestClientConfiguration.xml");
 
-            // TODO: once the previous call returns, the silo is up and running.
-            //       This is the place your custom logic, for example calling client logic
-            //       or initializing an HTTP front end for accepting incoming requests.
-            var mygrain = GrainClient.GrainFactory.GetGrain<IMyGrain>(Guid.Empty);
+            //var mygrain = GrainClient.GrainFactory.GetGrain<IMyGrain>(Guid.Empty);
 
-            for (int i = 0; i < 100; i++)
-            {
-                var val = mygrain.IncrementAndGet(1);
-                val.Wait();
-                Console.WriteLine($"Value:{val.Result}");
-                Thread.Sleep(1000);
-            }
+            //for (int i = 0; i < 100; i++)
+            //{
+            //    var val = mygrain.IncrementAndGet(1);
+            //    val.Wait();
+            //    Console.WriteLine($"Value:{val.Result}");
+            //    Thread.Sleep(1000);
+            //}
 
             Console.WriteLine("Orleans Silo is running.\nPress Enter to terminate...");
             Console.ReadLine();

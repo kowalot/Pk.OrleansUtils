@@ -84,6 +84,7 @@ namespace Pk.OrleansUtils.Tests
         {
             MyTestingHost.StopAllSilos();
             SiloHost = null;
+            ConsulMembershipTable.DeleteMembershipTableEntries(ClusterConfig.Globals.DeploymentId);
         }
 
         [TestMethod, TestCategory("Membership"), TestCategory("Consul")]
@@ -147,7 +148,7 @@ namespace Pk.OrleansUtils.Tests
             var refreshedTable = await ConsulMembershipTable.ReadAll();
             Assert.IsTrue(refreshedTable.Members.Count == 1);
             var entry = refreshedTable.Members.Select(t => t.Item1).FirstOrDefault();
-            var iamAliveDate = DateTime.Now;
+            var iamAliveDate = DateTime.Parse(DateTime.UtcNow.ToString());
             entry.IAmAliveTime = iamAliveDate;
             var updateStatus = await ConsulMembershipTable.UpdateRow(entry, refreshedTable.Version.VersionEtag, refreshedTable.Version);
             Assert.IsTrue(updateStatus);
@@ -182,7 +183,7 @@ namespace Pk.OrleansUtils.Tests
             var refreshedTable = await ConsulMembershipTable.ReadAll();
             Assert.IsTrue(refreshedTable.Members.Count == 1);
             var entry = refreshedTable.Members.Select(t => t.Item1).FirstOrDefault();
-            var iamAliveDate = DateTime.Now;
+            var iamAliveDate = DateTime.UtcNow;
             iamAliveDate = DateTime.Parse(iamAliveDate.ToString());//TRICKY: because miliseconds are NOT stored so Assert wouldnt work
             await ConsulMembershipTable.UpdateIAmAlive(entry);
             var updatedEntryTable = await ConsulMembershipTable.ReadRow(entry.SiloAddress);

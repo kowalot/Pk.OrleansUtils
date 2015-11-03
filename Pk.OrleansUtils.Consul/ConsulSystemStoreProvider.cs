@@ -42,10 +42,14 @@ namespace Pk.OrleansUtils.Consul
 
         public string DeploymentId { get; private set; }
 
-        public Task DeleteMembershipTableEntries(string deploymentId)
+        public async Task DeleteMembershipTableEntries(string deploymentId)
         {
-            throw new NotImplementedException();
+            var key = KVEntry.GetFolderKey(ORLEANS_CATALOG_KEY, DeploymentId);
+            var deleteRet = await Consul.DeleteKV(key, new { recurse = 1 });
+            if (logger.IsVerbose3)
+                logger.Verbose3("DeleteMembershipTableEntries has been finished.");
         }
+
 
         public IList<Uri> GetGateways()
         {
@@ -68,18 +72,6 @@ namespace Pk.OrleansUtils.Consul
             this.Consul = new ConsulClient(ConsulConnectionInfo.FromConnectionString(dataConnectionString));
             if (tryInitTableVersion)
             {
-                // if you are first and there are entries delete table
-                // which mean that whole cluster is recreated for the same deploymentId
-                var gateways = await ReadAll();
-                if (gateways.Members.Count > 0)
-                {
-                    if (logger.IsVerbose3)
-                        logger.Verbose3("First member initialization... delete old table.");
-                    var deleteRet = await Consul.DeleteKV(KVEntry.GetFolderKey(ORLEANS_CATALOG_KEY), new { recurse=1 });
-                    if (logger.IsVerbose3)
-                        logger.Verbose3("Membership table has been deleted.");
-                }
-
                 // create new root catalog
                 await CreateRootCatalog(tryInitTableVersion);
             }
@@ -130,7 +122,7 @@ namespace Pk.OrleansUtils.Consul
                 var consulTable = catalogKVEntry.GetValueAsObject<ConsulMembershipTableEntry>();
                 if (entryPredicate != null)
                 {
-                    consulTable.Members = consulTable.Members.Values.Where(entryPredicate).ToDictionary(t => t.InstanceName);
+                    consulTable.Members = consulTable.Members.Values.Where(entryPredicate).ToDictionary(t => t.SiloAddress);
                 }
                 // Apply separate "dirty writes" IamAlive kvs
                 var subKeyName = "";
@@ -168,9 +160,9 @@ namespace Pk.OrleansUtils.Consul
         public async Task<bool> InsertRow(MembershipEntry entry, TableVersion tableVersion)
         {
             var consulTable = await BuildTableWhere(t => true);
-            if (consulTable.Members.ContainsKey(entry.InstanceName))
+            if (consulTable.Members.ContainsKey(entry.SiloAddress.ToParsableString()))
                 throw new ConsulSystemStoreException.DuplicatedEntry();
-            consulTable.Members.Add(entry.InstanceName,new ConsulMembershipEntry(entry));
+            consulTable.Members.Add(entry.SiloAddress.ToParsableString(),new ConsulMembershipEntry(entry));
             return await consulTable.Save(Consul,tableVersion);
         }
 
@@ -188,7 +180,7 @@ namespace Pk.OrleansUtils.Consul
             var keyPath = new string[] { ORLEANS_CATALOG_KEY, DeploymentId, ORLEANS_I_AM_ALIVE_FOLDER_KEY, entry.SiloAddress.ToParsableString() };
             var storedKV = (await Consul.ReadKVEntries(new { }, keyPath)).FirstOrDefault();
             KVEntry kv = storedKV ?? KVEntry.CreateForKey(keyPath);
-            kv.SetValue(DateTime.Now.ToString());
+            kv.SetValue(DateTime.UtcNow.ToString());
             await Consul.PutKV(kv);
         }
 
@@ -212,7 +204,7 @@ namespace Pk.OrleansUtils.Consul
         public async Task<bool> UpdateRow(MembershipEntry entry, string etag, TableVersion tableVersion)
         {
             var consulTable = await BuildTableWhere(t => true);
-            var storedEntry = consulTable.Members.Values.FirstOrDefault(t=>t.InstanceName == entry.InstanceName);
+            var storedEntry = consulTable.Members.Values.FirstOrDefault(t=>t.SiloAddress == entry.SiloAddress.ToParsableString());
             if (storedEntry==null)
                 /// 1) A MembershipEntry for a given silo does not exist in the table
                 throw new ConsulSystemStoreException.UpdateRowFailedNoEntry();
@@ -220,8 +212,8 @@ namespace Pk.OrleansUtils.Consul
             /// 3) Update of the TableVersion failed since the given TableVersion etag (as specified by the TableVersion.VersionEtag property) did not match the TableVersion etag in the table.
             if (!consulTable.CanBeUpdated(tableVersion))// 2&3 because they are updated in Consul together
                 throw new ConsulSystemStoreException.WrongVersionException();
-            consulTable.Members.Remove(storedEntry.InstanceName);
-            consulTable.Members.Add(entry.InstanceName,new ConsulMembershipEntry(entry));
+            consulTable.Members.Remove(storedEntry.SiloAddress);
+            consulTable.Members.Add(entry.SiloAddress.ToParsableString(), new ConsulMembershipEntry(entry));
             return await consulTable.Save(Consul,tableVersion);
         }
     }

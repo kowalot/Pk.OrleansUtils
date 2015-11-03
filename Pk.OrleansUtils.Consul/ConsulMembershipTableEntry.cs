@@ -32,7 +32,7 @@ namespace Pk.OrleansUtils.Consul
 
         internal MembershipTableData GetMembershipTableData()
         {
-            var mb = new MembershipTableData(Members.Select(t => new Tuple<MembershipEntry,string>(t.Value.GetMembershipEntry(),t.Key)).ToList()
+            var mb = new MembershipTableData(Members.Select(t => new Tuple<MembershipEntry,string>(t.Value.GetMembershipEntry(), (_kvEntry != null) ? _kvEntry.ModifyIndex.ToString() : (string)null)).ToList()
                                             , new TableVersion(Version, (_kvEntry!= null) ? _kvEntry.ModifyIndex.ToString() : "0"));
             return mb;
         }

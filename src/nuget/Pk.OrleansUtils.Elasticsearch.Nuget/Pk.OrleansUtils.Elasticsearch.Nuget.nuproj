@@ -11,20 +11,20 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>7be14508-2215-4c9b-8dc3-8c55e5d2631e</ProjectGuid>
+    <ProjectGuid>0c298395-3fc1-4430-bcec-896df66efb16</ProjectGuid>
   </PropertyGroup>
   <PropertyGroup>
     <NuProjPath Condition=" '$(NuProjPath)' == '' ">$(MSBuildExtensionsPath)\NuProj\</NuProjPath>
   </PropertyGroup>
   <Import Project="$(NuProjPath)\NuProj.props" Condition="Exists('$(NuProjPath)\NuProj.props')" />
   <PropertyGroup Label="Configuration">
-    <Id>Pk.OrleansUtils.Consul.Nuget</Id>
-    <Version>0.5</Version>
-    <Title>Pk.OrleansUtils.Consul</Title>
+    <Id>Pk.OrleansUtils.Elasticsearch.Nuget</Id>
+    <Version>0.7</Version>
+    <Title>Pk.OrleansUtils.Elasticsearch</Title>
     <Authors>Pawel K.</Authors>
     <Owners>Pawel K.</Owners>
-    <Summary>Consul as systemstore for Orleans membership table</Summary>
-    <Description>Pk.OrleansUtils.Consul.Nuget</Description>
+    <Summary>Elasticsearch grains and reminders storage for Orleans</Summary>
+    <Description>Elasticsearch grains and reminders storage for Orleans</Description>
     <ReleaseNotes>
     </ReleaseNotes>
     <ProjectUrl>
@@ -33,14 +33,14 @@
     <LicenseUrl>
       https://github.com/kowalot/Pk.OrleansUtils/LICENSE.md
     </LicenseUrl>
-    <Copyright>Copyright © Pawel K.</Copyright>
-    <Tags>Orleans Consul</Tags>
+    <Copyright>Copyright © Pablo</Copyright>
+    <Tags>Pk.OrleansUtils.Elasticsearch.Nuget</Tags>
   </PropertyGroup>
   <ItemGroup>
     <Content Include="Readme.txt" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Pk.OrleansUtils.Consul\Pk.OrleansUtils.Consul.csproj" />
+    <ProjectReference Include="..\..\Pk.OrleansUtils.ElasticSearch\Pk.OrleansUtils.ElasticSearch.csproj" />
   </ItemGroup>
   <Import Project="$(NuProjPath)\NuProj.targets" />
 </Project>

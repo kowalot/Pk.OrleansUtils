@@ -11,34 +11,36 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>8860c64f-4ea6-486e-8aa0-6dbff85e6684</ProjectGuid>
+    <ProjectGuid>7be14508-2215-4c9b-8dc3-8c55e5d2631e</ProjectGuid>
   </PropertyGroup>
   <PropertyGroup>
     <NuProjPath Condition=" '$(NuProjPath)' == '' ">$(MSBuildExtensionsPath)\NuProj\</NuProjPath>
   </PropertyGroup>
   <Import Project="$(NuProjPath)\NuProj.props" Condition="Exists('$(NuProjPath)\NuProj.props')" />
   <PropertyGroup Label="Configuration">
-    <Id>Pk.OrleansUtils.ApplicationInsights.Nuget</Id>
-    <Version>0.3.0</Version>
-    <Title>Application Insights Telemetry for Orleans</Title>
-    <Authors>Pablo</Authors>
-    <Owners>Pablo</Owners>
-    <Summary>Pk.OrleansUtils.ApplicationInsights.Nuget</Summary>
-    <Description>Pk.OrleansUtils.ApplicationInsights.Nuget</Description>
+    <Id>Pk.OrleansUtils.Consul.Nuget</Id>
+    <Version>0.5.2</Version>
+    <Title>Pk.OrleansUtils.Consul</Title>
+    <Authors>Pawel K.</Authors>
+    <Owners>Pawel K.</Owners>
+    <Summary>Consul as systemstore for Orleans membership table</Summary>
+    <Description>Pk.OrleansUtils.Consul.Nuget</Description>
     <ReleaseNotes>
     </ReleaseNotes>
     <ProjectUrl>
+      https://github.com/kowalot/Pk.OrleansUtils
     </ProjectUrl>
     <LicenseUrl>
+      https://github.com/kowalot/Pk.OrleansUtils/LICENSE.md
     </LicenseUrl>
-    <Copyright>Copyright © Pablo</Copyright>
-    <Tags>Pk.OrleansUtils.ApplicationInsights.Nuget</Tags>
+    <Copyright>Copyright © Pawel K.</Copyright>
+    <Tags>Orleans Consul</Tags>
   </PropertyGroup>
   <ItemGroup>
     <Content Include="Readme.txt" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Pk.OrleansUtils.ApplicationInsights\Pk.OrleansUtils.ApplicationInsights.csproj" />
+    <ProjectReference Include="..\..\Pk.OrleansUtils.Consul\Pk.OrleansUtils.Consul.csproj" />
   </ItemGroup>
   <Import Project="$(NuProjPath)\NuProj.targets" />
 </Project>

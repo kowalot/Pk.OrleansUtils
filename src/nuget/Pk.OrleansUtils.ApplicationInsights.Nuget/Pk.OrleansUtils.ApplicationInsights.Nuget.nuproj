@@ -11,36 +11,34 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>0c298395-3fc1-4430-bcec-896df66efb16</ProjectGuid>
+    <ProjectGuid>8860c64f-4ea6-486e-8aa0-6dbff85e6684</ProjectGuid>
   </PropertyGroup>
   <PropertyGroup>
     <NuProjPath Condition=" '$(NuProjPath)' == '' ">$(MSBuildExtensionsPath)\NuProj\</NuProjPath>
   </PropertyGroup>
   <Import Project="$(NuProjPath)\NuProj.props" Condition="Exists('$(NuProjPath)\NuProj.props')" />
   <PropertyGroup Label="Configuration">
-    <Id>Pk.OrleansUtils.Elasticsearch.Nuget</Id>
-    <Version>0.7</Version>
-    <Title>Pk.OrleansUtils.Elasticsearch</Title>
-    <Authors>Pawel K.</Authors>
-    <Owners>Pawel K.</Owners>
-    <Summary>Elasticsearch grains and reminders storage for Orleans</Summary>
-    <Description>Elasticsearch grains and reminders storage for Orleans</Description>
+    <Id>Pk.OrleansUtils.ApplicationInsights.Nuget</Id>
+    <Version>0.3.0</Version>
+    <Title>Application Insights Telemetry for Orleans</Title>
+    <Authors>Pablo</Authors>
+    <Owners>Pablo</Owners>
+    <Summary>Pk.OrleansUtils.ApplicationInsights.Nuget</Summary>
+    <Description>Pk.OrleansUtils.ApplicationInsights.Nuget</Description>
     <ReleaseNotes>
     </ReleaseNotes>
     <ProjectUrl>
-      https://github.com/kowalot/Pk.OrleansUtils
     </ProjectUrl>
     <LicenseUrl>
-      https://github.com/kowalot/Pk.OrleansUtils/LICENSE.md
     </LicenseUrl>
     <Copyright>Copyright © Pablo</Copyright>
-    <Tags>Pk.OrleansUtils.Elasticsearch.Nuget</Tags>
+    <Tags>Pk.OrleansUtils.ApplicationInsights.Nuget</Tags>
   </PropertyGroup>
   <ItemGroup>
     <Content Include="Readme.txt" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Pk.OrleansUtils.ElasticSearch\Pk.OrleansUtils.ElasticSearch.csproj" />
+    <ProjectReference Include="..\..\Pk.OrleansUtils.ApplicationInsights\Pk.OrleansUtils.ApplicationInsights.csproj" />
   </ItemGroup>
   <Import Project="$(NuProjPath)\NuProj.targets" />
 </Project>

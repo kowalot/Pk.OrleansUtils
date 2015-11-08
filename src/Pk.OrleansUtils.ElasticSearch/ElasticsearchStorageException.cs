@@ -4,7 +4,7 @@ using System.Runtime.Serialization;
 namespace Pk.OrleansUtils.ElasticSearch
 {
     [Serializable]
-    internal class ElasticsearchStorageException : Exception
+    public class ElasticsearchStorageException : Exception
     {
         public ElasticsearchStorageException()
         {

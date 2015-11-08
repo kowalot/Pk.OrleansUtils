@@ -8,6 +8,7 @@ using Nest;
 using System.Collections.Generic;
 using Newtonsoft.Json;
 using System.Linq;
+using Elasticsearch.Net;
 
 namespace Pk.OrleansUtils.ElasticSearch
 {
@@ -39,12 +40,29 @@ namespace Pk.OrleansUtils.ElasticSearch
 
         public ConnectionInfo ConnectionStringInfo { get; private set; }
 
+
+        public ElasticClient Client { get; protected set; }
+
+        public ElasticStorageProvider()
+        {
+
+        }
+        public ElasticStorageProvider(ElasticClient client)
+        {
+            Client = client;
+        }
+
+        internal async Task ClearStateInElasticAsync(string grainType, string key, GrainState grainState)
+        {
+            var res = await Client.DeleteAsync(ConnectionStringInfo.Index, GetElasticSearchType(grainType), key);
+
+        }
+
+
         public async Task ClearStateAsync(string grainType, GrainReference grainReference, GrainState grainState)
         {
-            var elasticType = grainType.Replace('.', '_');
-            var key = grainReference.ToString();
-            var client = new ElasticClient();
-            var res = await client.DeleteAsync(ConnectionStringInfo.Index,elasticType,key);
+            var key = GetElasticSearchKey(grainReference);
+            await ClearStateInElasticAsync(grainType, key, grainState);
         }
 
         public Task Close()
@@ -92,12 +110,12 @@ namespace Pk.OrleansUtils.ElasticSearch
             ConnectionSettings = new ConnectionSettings(new UriBuilder("http",ConnectionStringInfo.Host,ConnectionStringInfo.Port,"","").Uri,ConnectionStringInfo.Index);
             _name = name;
             Log = providerRuntime.GetLogger(this.GetType().FullName);
-            var client = new ElasticClient();
-            var res = await client.IndexExistsAsync(ConnectionStringInfo.Index);
+            Client = Client ?? new ElasticClient(ConnectionSettings);
+            var res = await Client.IndexExistsAsync(ConnectionStringInfo.Index);
             if (!res.Exists)
             {
                 Log.Info("Index {0} does not exist.Creating...", ConnectionStringInfo.Index);
-                var createResponse = await client.CreateIndexAsync(ConnectionStringInfo.Index);
+                var createResponse = await Client.CreateIndexAsync(ConnectionStringInfo.Index);
                 if (createResponse.Acknowledged)
                 {
                     Log.Info("Index {0} has been created.", ConnectionStringInfo.Index);
@@ -105,32 +123,55 @@ namespace Pk.OrleansUtils.ElasticSearch
             }
         }
 
-        public async Task ReadStateAsync(string grainType, GrainReference grainReference, GrainState grainState)
+        internal async Task ReadStateFromElasticAsync(string grainType, string key, GrainState grainState)
         {
-            var key = GetElasticSearchKey(grainReference);
-            var client = CreateClient();
-            var response = await client.Raw.GetAsync(ConnectionStringInfo.Index, GetElasticSearchType(grainType), key);
+            var response = await Client.Raw.GetAsync(ConnectionStringInfo.Index, GetElasticSearchType(grainType), key);
             if (response.Success && (bool)response.Response["found"])
             {
                 JsonConvert.PopulateObject(response.Response["_source"], grainState, new JsonSerializerSettings() { });
+                grainState.Etag = response.Response["_version"];
+                var occ = grainState as IOptimisticConcurrencyControl;
+                if (occ != null)
+                    occ.Version = response.Response["_version"];
             }
-            grainState.Etag = DateTime.UtcNow.ToString();
+        }
+
+        public async Task ReadStateAsync(string grainType, GrainReference grainReference, GrainState grainState)
+        {
+            var key = GetElasticSearchKey(grainReference);
+            await ReadStateFromElasticAsync(grainType, key, grainState);
+        }
+
+        internal async Task WriteStateToElasticAsync(string grainType, string key, GrainState grainState)
+        {
+            var occ = grainState as IOptimisticConcurrencyControl;
+            Func<IndexRequestParameters, IndexRequestParameters> rp = null;
+            if (occ != null)
+            {
+                if (occ.Version==0) 
+                    rp = x => x.OpType(OpType.Create).Version(occ.Version);
+                 else
+                    rp = x => x.Version(occ.Version);
+
+            }
+            var response = await Client.Raw.
+                                    IndexAsync(ConnectionStringInfo.Index, GetElasticSearchType(grainType), key, grainState,
+                                    rp
+                                    );
+            if (!response.Success)
+            {
+                throw new ElasticsearchStorageException("WriteStateAsync operation failed.",response.OriginalException);
+            }
+            if (occ!=null)//update version
+            {
+                occ.Version = response.Response["_version"];
+            }
         }
 
         public async Task WriteStateAsync(string grainType, GrainReference grainReference, GrainState grainState)
         {
             var key = GetElasticSearchKey(grainReference);
-            var client = CreateClient();
-            var response = await client.Raw.IndexAsync(ConnectionStringInfo.Index, GetElasticSearchType(grainType), key, grainState);
-            if (!response.Success)
-            {
-                throw new Exception("WriteStateAsync operation failed");
-            }
-
-        }
-        protected ElasticClient CreateClient()
-        {
-            return new ElasticClient(ConnectionSettings);
+            await WriteStateToElasticAsync(grainType, key, grainState);
         }
         protected string GetElasticSearchType(string grainType)
         {

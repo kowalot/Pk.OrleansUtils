@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Pk.OrleansUtils.Consul;
 using Newtonsoft.Json;
+using FluentAssertions;
 
 namespace Pk.OrleansUtils.Tests
 {
@@ -73,31 +74,54 @@ namespace Pk.OrleansUtils.Tests
         public void KVEntry_CanCreateValidMultilevelKey()
         {
             var key = KVEntry.GetKey("level1", "level2", "level3");
-            Assert.IsTrue(key == "level1/level2/level3");
+            //Assert
+            key.Should().Be("level1/level2/level3");
         }
 
 
         [TestMethod]
         public void KVEntry_CanExtractSubKeyAndCheckIfItsFromCertainFolder()
         {
-            var new1 = KVEntry.CreateForKey("level1", "level2", "level3");
+            //Arrange
+            var sut = KVEntry.CreateForKey("level1", "level2", "level3");
             var subKey = "";
-            Assert.IsTrue(new1.IsSubKeyOf(out subKey, "level1","level2"));
-            Assert.IsTrue(subKey == "level3");
-            subKey = "";
-            Assert.IsFalse(new1.IsSubKeyOf(out subKey, "level1"));
-            Assert.IsTrue(subKey == "");
+            //Act
+            var ret = sut.IsSubKeyOf(out subKey, "level1", "level2");
+            //Assert
+            ret.Should().BeTrue();
+            subKey.Should().Be("level3");
+
+         
         }
+
+        [TestMethod]
+        public void KVEntry_CanExtractSubKeyAndCheckIfItsNotFromCertainFolder()
+        {
+            //Arrange
+            var sut = KVEntry.CreateForKey("level1", "level2", "level3");
+            var subKey2 = "";
+            //Act
+            var ret2 = sut.IsSubKeyOf(out subKey2, "level1");
+            // Assert
+            ret2.Should().BeFalse();
+            subKey2.Should().BeEmpty();
+        }
+
+
         [TestMethod]
         public void KVEntry_CanBeDeserializedFromConsulKVEntry()
         {
+            //Arrange
             var entryJson = "{\"CreateIndex\":2569,\"ModifyIndex\":11,\"LockIndex\":1,\"Key\":\"MembershipTable/testdepid-2015-10-18-12-08-35-102-281/IAmAlive/127.0.0.1:22222@182866116\",\"Flags\":0,\"Value\":\"MjAxNS0xMC0xOCAxMjoxMDowMQ == \"}";
+            //Act
             var kv = JsonConvert.DeserializeObject<KVEntry>(entryJson);
-            Assert.IsTrue(kv.CreateIndex==2569);
-            Assert.IsTrue(kv.ModifyIndex == 11);
-            Assert.IsTrue(kv.LockIndex == 1);
-            Assert.IsTrue(kv.Key == "MembershipTable/testdepid-2015-10-18-12-08-35-102-281/IAmAlive/127.0.0.1:22222@182866116");
-            Assert.IsTrue(kv.Value== "2015-10-18 12:10:01");
+            //Assert
+            kv.Should().NotBeNull();
+            kv.CreateIndex.Should().Be(2569);
+            kv.ModifyIndex.Should().Be(11);
+            kv.LockIndex.Should().Be(1);
+            kv.Key.Should().Be("MembershipTable/testdepid-2015-10-18-12-08-35-102-281/IAmAlive/127.0.0.1:22222@182866116");
+            kv.Value.Should().Be("2015-10-18 12:10:01");
         }
     }
 }

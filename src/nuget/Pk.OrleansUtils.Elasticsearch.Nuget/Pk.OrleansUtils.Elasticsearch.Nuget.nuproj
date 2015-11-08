@@ -19,14 +19,13 @@
   <Import Project="$(NuProjPath)\NuProj.props" Condition="Exists('$(NuProjPath)\NuProj.props')" />
   <PropertyGroup Label="Configuration">
     <Id>Pk.OrleansUtils.Elasticsearch.Nuget</Id>
-    <Version>0.7</Version>
+    <Version>0.7.1</Version>
     <Title>Pk.OrleansUtils.Elasticsearch</Title>
     <Authors>Pawel K.</Authors>
     <Owners>Pawel K.</Owners>
     <Summary>Elasticsearch grains and reminders storage for Orleans</Summary>
     <Description>Elasticsearch grains and reminders storage for Orleans</Description>
-    <ReleaseNotes>
-    </ReleaseNotes>
+    <ReleaseNotes>Bug fixing</ReleaseNotes>
     <ProjectUrl>
       https://github.com/kowalot/Pk.OrleansUtils
     </ProjectUrl>

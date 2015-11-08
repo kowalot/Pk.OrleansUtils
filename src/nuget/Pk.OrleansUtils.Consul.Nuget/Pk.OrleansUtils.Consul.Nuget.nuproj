@@ -19,7 +19,7 @@
   <Import Project="$(NuProjPath)\NuProj.props" Condition="Exists('$(NuProjPath)\NuProj.props')" />
   <PropertyGroup Label="Configuration">
     <Id>Pk.OrleansUtils.Consul.Nuget</Id>
-    <Version>0.5.2</Version>
+    <Version>0.5.3</Version>
     <Title>Pk.OrleansUtils.Consul</Title>
     <Authors>Pawel K.</Authors>
     <Owners>Pawel K.</Owners>
